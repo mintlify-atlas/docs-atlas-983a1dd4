@@ -1,0 +1,297 @@
+---
+title: Adding Plugins
+description: Learn how to add and configure new plugins using lazy.nvim
+---
+
+## Overview
+
+nvim-luffy uses [lazy.nvim](https://github.com/folke/lazy.nvim) as its plugin manager. This guide will show you how to add new plugins and configure them effectively.
+
+## Understanding the Plugin Structure
+
+Plugins are organized in the `lua/leyland/plugins/` directory. The lazy.nvim setup automatically imports all plugins from this location:
+
+```lua
+require("lazy").setup({
+  { import = "leyland.plugins" },
+  { import = "leyland.plugins.lsp" }
+}, {
+  checker = {
+    enabled = true,
+    notify = false,
+  },
+  change_detection = {
+    notify = false,
+  },
+})
+```
+
+Referenced in: `lua/leyland/lazy.lua:14-22`
+
+## Adding a Simple Plugin
+
+<Steps>
+  <Step title="Create a new plugin file">
+    Create a new file in `lua/leyland/plugins/` with a descriptive name, for example `lua/leyland/plugins/leap.lua`:
+
+    ```lua
+    return {
+      "ggandor/leap.nvim",
+      config = function()
+        require("leap").add_default_mappings()
+      end,
+    }
+    ```
+  </Step>
+
+  <Step title="Restart Neovim">
+    Restart Neovim or run `:Lazy sync` to install the new plugin.
+
+    lazy.nvim will automatically detect the new plugin file and install it.
+  </Step>
+
+  <Step title="Verify installation">
+    Run `:Lazy` to open the lazy.nvim UI and verify your plugin is installed and loaded correctly.
+  </Step>
+</Steps>
+
+## Plugin Configuration Options
+
+### Basic Plugin Spec
+
+Here's a comprehensive example showing common plugin options:
+
+```lua
+return {
+  "username/plugin-name",           -- GitHub repository
+  dependencies = {                  -- Required plugins
+    "nvim-lua/plenary.nvim",
+  },
+  event = "VeryLazy",               -- When to load (lazy loading)
+  cmd = "PluginCommand",             -- Load on command
+  keys = {                          -- Load on keypress
+    { "<leader>p", "<cmd>PluginCommand<cr>", desc = "Run plugin" },
+  },
+  config = function()               -- Setup function
+    require("plugin-name").setup({
+      -- your configuration
+    })
+  end,
+}
+```
+
+### Using the `opts` Shorthand
+
+For plugins that call `.setup()` with options, you can use the `opts` table:
+
+```lua
+return {
+  "numToStr/Comment.nvim",
+  event = { "BufReadPre", "BufNewFile" },
+  opts = {
+    toggler = {
+      line = "gcc",
+      block = "gbc",
+    },
+  },
+}
+```
+
+This is equivalent to:
+
+```lua
+config = function()
+  require("Comment").setup({
+    toggler = { line = "gcc", block = "gbc" }
+  })
+end
+```
+
+## Real Examples from the Configuration
+
+### Example 1: Telescope (Complex Plugin)
+
+From `lua/leyland/plugins/telescope.lua`:
+
+```lua
+return {
+  "nvim-telescope/telescope.nvim",
+  branch = "0.1.x",
+  dependencies = {
+    "nvim-lua/plenary.nvim",
+    { "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
+    "nvim-tree/nvim-web-devicons",
+    "folke/todo-comments.nvim",
+  },
+  config = function()
+    local telescope = require("telescope")
+    local actions = require("telescope.actions")
+
+    telescope.setup({
+      defaults = {
+        path_display = { "filename_first" },
+        mappings = {
+          i = {
+            ["<C-k>"] = actions.move_selection_previous,
+            ["<C-j>"] = actions.move_selection_next,
+          },
+        },
+      },
+    })
+
+    telescope.load_extension("fzf")
+
+    -- Keymaps
+    local keymap = vim.keymap
+    keymap.set("n", "<leader><leader>", "<cmd>Telescope find_files<cr>")
+    keymap.set("n", "<leader>/", "<cmd>Telescope live_grep<cr>")
+  end,
+}
+```
+
+Referenced in: `lua/leyland/plugins/telescope.lua:1-46`
+
+### Example 2: Treesitter (Build Step)
+
+From `lua/leyland/plugins/treesitter.lua`:
+
+```lua
+return {
+  "nvim-treesitter/nvim-treesitter",
+  event = { "BufReadPre", "BufNewFile" },
+  build = ":TSUpdate",  -- Run after install/update
+  config = function()
+    require("nvim-treesitter").setup({
+      ensure_installed = {
+        "json", "javascript", "typescript", "tsx",
+        "html", "css", "lua", "vim", "markdown",
+      },
+    })
+  end,
+}
+```
+
+Referenced in: `lua/leyland/plugins/treesitter.lua:1-34`
+
+### Example 3: Simple Dependencies
+
+From `lua/leyland/plugins/init.lua`:
+
+```lua
+return {
+  "nvim-lua/plenary.nvim",
+  "christoomey/vim-tmux-navigator",
+}
+```
+
+Referenced in: `lua/leyland/plugins/init.lua:1-5`
+
+## Lazy Loading Strategies
+
+### Load on Event
+
+```lua
+event = "VeryLazy"              -- After startup
+event = "InsertEnter"           -- Entering insert mode
+event = { "BufReadPre", "BufNewFile" }  -- Opening files
+```
+
+Example from nvim-cmp:
+
+```lua
+return {
+  "hrsh7th/nvim-cmp",
+  event = "InsertEnter",
+  -- ...
+}
+```
+
+Referenced in: `lua/leyland/plugins/nvim-cmp.lua:2-3`
+
+### Load on Command
+
+```lua
+cmd = "CommandName"             -- Single command
+cmd = { "Cmd1", "Cmd2" }        -- Multiple commands
+```
+
+### Load on Keypress
+
+```lua
+keys = {
+  { "<leader>g", "<cmd>Git<cr>", desc = "Open git" },
+  { "<leader>gc", "<cmd>Git commit<cr>", desc = "Git commit" },
+}
+```
+
+### Priority Loading
+
+For colorschemes and critical plugins:
+
+```lua
+{
+  "folke/tokyonight.nvim",
+  priority = 1000,  -- Load before other plugins
+  lazy = false,     -- Don't lazy load
+}
+```
+
+Referenced in: `lua/leyland/plugins/colorscheme.lua:8-11`
+
+## Managing Plugins
+
+### lazy.nvim Commands
+
+- `:Lazy` - Open lazy.nvim UI
+- `:Lazy sync` - Install missing plugins and update existing ones
+- `:Lazy update` - Update plugins
+- `:Lazy clean` - Remove unused plugins
+- `:Lazy check` - Check for plugin updates
+- `:Lazy profile` - Show startup time profile
+
+### Plugin Organization Tips
+
+<Tip>
+Group related plugins in the same file. For example, all LSP-related plugins are in `lua/leyland/plugins/lsp/`.
+</Tip>
+
+<Tip>
+Use descriptive filenames that match the plugin's purpose (e.g., `telescope.lua`, `treesitter.lua`).
+</Tip>
+
+<Warning>
+Be careful with plugin dependencies. Ensure dependent plugins are listed in the `dependencies` table to avoid loading issues.
+</Warning>
+
+## Plugin Configuration Best Practices
+
+1. **Use lazy loading** - Only load plugins when needed to improve startup time
+2. **Set up keymaps in config** - Keep keymaps close to plugin configuration
+3. **Use `opts` for simple configs** - More concise than full `config` function
+4. **Pin versions** - Use `version` or `branch` for stability
+5. **Document your changes** - Add comments explaining why you added a plugin
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Plugin not loading">
+    Check if the plugin is lazy-loaded with restrictive conditions:
+    - Remove `event`, `cmd`, or `keys` to force immediate loading
+    - Run `:Lazy load plugin-name` to manually load it
+    - Check `:Lazy` UI for error messages
+  </Accordion>
+
+  <Accordion title="Build step failing">
+    Some plugins require compilation:
+    - Ensure you have required build tools (gcc, make, cmake)
+    - Check the plugin's README for specific requirements
+    - Try running the build command manually in the plugin directory
+  </Accordion>
+
+  <Accordion title="Conflicting keymaps">
+    If keymaps aren't working:
+    - Use `:Telescope keymaps` to see all active keymaps
+    - Check for duplicate mappings in different plugin configs
+    - Ensure your keymap is set after the plugin loads
+  </Accordion>
+</AccordionGroup>

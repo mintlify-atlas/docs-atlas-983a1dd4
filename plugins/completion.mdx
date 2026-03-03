@@ -1,0 +1,242 @@
+---
+title: Completion
+description: Intelligent code completion with nvim-cmp, snippets, and LSP integration
+---
+
+Nvim-cmp provides powerful autocompletion capabilities with LSP integration, snippet support, and VS Code-like pictograms.
+
+## Features
+
+- LSP-based intelligent completions
+- Snippet expansion with LuaSnip
+- Buffer text completion
+- File path completion
+- VS Code-like icons (via lspkind)
+- Tab completion support
+
+## Completion Sources
+
+Completions are provided from multiple sources, prioritized in this order:
+
+<Steps>
+  <Step title="LSP (nvim_lsp)">
+    Intelligent suggestions from language servers - functions, variables, types, etc.
+  </Step>
+  
+  <Step title="Snippets (luasnip)">
+    Code snippets from friendly-snippets and custom snippets
+  </Step>
+  
+  <Step title="Buffer (buffer)">
+    Words from the current buffer
+  </Step>
+  
+  <Step title="Path (path)">
+    File system paths for imports and file references
+  </Step>
+</Steps>
+
+## Keybindings
+
+### Navigation
+
+<CardGroup cols={2}>
+  <Card title="Previous Item" icon="arrow-up">
+    `<C-k>` - Select previous suggestion
+  </Card>
+  
+  <Card title="Next Item" icon="arrow-down">
+    `<C-j>` - Select next suggestion
+  </Card>
+  
+  <Card title="Scroll Docs Up" icon="chevron-up">
+    `<C-b>` - Scroll documentation backward
+  </Card>
+  
+  <Card title="Scroll Docs Down" icon="chevron-down">
+    `<C-f>` - Scroll documentation forward
+  </Card>
+</CardGroup>
+
+### Actions
+
+<CardGroup cols={2}>
+  <Card title="Show Completions" icon="sparkles">
+    `<C-Space>` - Manually trigger completion menu
+  </Card>
+  
+  <Card title="Confirm" icon="check">
+    `<CR>` (Enter) - Confirm selected completion
+  </Card>
+  
+  <Card title="Abort" icon="xmark">
+    `<C-e>` - Close completion window
+  </Card>
+  
+  <Card title="Next/Expand" icon="tab">
+    `<Tab>` - Next item or expand snippet
+  </Card>
+</CardGroup>
+
+## Tab Completion Behavior
+
+The Tab key has intelligent behavior:
+
+```lua lua/leyland/plugins/nvim-cmp.lua
+["<Tab>"] = cmp.mapping(function(fallback)
+  if cmp.visible() then
+    cmp.select_next_item()
+  elseif luasnip.expand_or_jumpable() then
+    luasnip.expand_or_jump()
+  else
+    fallback()
+  end
+end, { "i", "s" })
+```
+
+<Tabs>
+  <Tab title="Completion Menu Open">
+    `<Tab>` selects the next completion item
+  </Tab>
+  
+  <Tab title="Snippet Active">
+    `<Tab>` jumps to the next snippet placeholder
+  </Tab>
+  
+  <Tab title="Default">
+    `<Tab>` inserts a regular tab character
+  </Tab>
+</Tabs>
+
+## Snippet Integration
+
+### LuaSnip
+
+LuaSnip provides snippet expansion capabilities:
+
+```lua
+snippet = {
+  expand = function(args)
+    luasnip.lsp_expand(args.body)
+  end,
+}
+```
+
+### Friendly Snippets
+
+VS Code-style snippets are automatically loaded:
+
+```lua
+require("luasnip.loaders.from_vscode").lazy_load()
+```
+
+This provides snippets for:
+- JavaScript/TypeScript
+- Python
+- Lua
+- HTML/CSS
+- And many more languages
+
+## Visual Formatting
+
+The completion menu uses lspkind for VS Code-like pictograms:
+
+```lua lua/leyland/plugins/nvim-cmp.lua
+formatting = {
+  format = lspkind.cmp_format({
+    maxwidth = 50,
+    ellipsis_char = "...",
+  }),
+}
+```
+
+<Note>
+Completion items are truncated at 50 characters with "..." to keep the menu readable.
+</Note>
+
+## Icon Types
+
+The pictograms indicate the type of completion:
+
+- 📝 Text
+- 🔧 Method
+- 🔨 Function  
+- 👷 Constructor
+- 🏷️ Field
+- 📦 Variable
+- 📚 Class
+- 🔌 Interface
+- 📋 Module
+- 🔑 Property
+- 📏 Unit
+- 💎 Value
+- 📖 Enum
+- 🔤 Keyword
+- 📄 File
+- 📂 Folder
+- 🎨 Color
+- 📎 Reference
+
+## Dependencies
+
+The completion system includes these plugins:
+
+<AccordionGroup>
+  <Accordion title="Core Plugins">
+    - **nvim-cmp** - Completion engine
+    - **cmp-nvim-lsp** - LSP source
+    - **LuaSnip** - Snippet engine
+    - **cmp_luasnip** - Snippet completions
+  </Accordion>
+  
+  <Accordion title="Additional Sources">
+    - **cmp-buffer** - Buffer word completions
+    - **cmp-path** - File path completions
+    - **friendly-snippets** - Snippet collection
+  </Accordion>
+  
+  <Accordion title="UI Enhancement">
+    - **lspkind.nvim** - VS Code-like pictograms
+  </Accordion>
+</AccordionGroup>
+
+## Configuration Details
+
+### Event Trigger
+
+```lua
+event = "InsertEnter"
+```
+
+Nvim-cmp is lazy-loaded and only activates when entering insert mode, improving startup time.
+
+### Confirm Behavior
+
+```lua
+["<CR>"] = cmp.mapping.confirm({ select = false })
+```
+
+<Tip>
+With `select = false`, pressing Enter without explicitly selecting an item won't auto-complete. You must select a completion item first.
+</Tip>
+
+## Usage Tips
+
+<Steps>
+  <Step title="Let LSP Guide You">
+    Start typing and wait a moment. LSP completions will appear automatically with intelligent suggestions.
+  </Step>
+  
+  <Step title="Use Snippets">
+    Type a snippet trigger (like `func` for a function) and press Tab to expand and navigate through placeholders.
+  </Step>
+  
+  <Step title="Explore Documentation">
+    Many completions include documentation. Use `<C-f>` and `<C-b>` to scroll through it.
+  </Step>
+</Steps>
+
+## See Also
+
+- [LSP Configuration](/plugins/lsp) - Language server setup
+- [Treesitter](/plugins/treesitter) - Syntax-aware features

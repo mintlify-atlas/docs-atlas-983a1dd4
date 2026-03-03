@@ -1,0 +1,266 @@
+---
+title: Code Formatting
+description: Automatic code formatting with Conform.nvim using Prettier, Stylua, and more
+---
+
+Conform.nvim provides fast, asynchronous code formatting with support for multiple formatters and automatic formatting on save.
+
+## Features
+
+- Format on save (automatic)
+- Manual formatting with keybinding
+- Multiple formatter support per language
+- LSP fallback for unsupported languages
+- Fast async formatting
+
+## Supported Languages
+
+### JavaScript/TypeScript (Prettier)
+
+<CardGroup cols={2}>
+  <Card title="JavaScript" icon="js">
+    .js files
+  </Card>
+  <Card title="TypeScript" icon="code">
+    .ts files
+  </Card>
+  <Card title="React (JSX)" icon="react">
+    .jsx files
+  </Card>
+  <Card title="React (TSX)" icon="react">
+    .tsx files
+  </Card>
+</CardGroup>
+
+### Web Technologies (Prettier)
+
+- **HTML** - .html files
+- **CSS** - .css files  
+- **Svelte** - .svelte components
+- **JSON** - .json files
+- **YAML** - .yaml/.yml files
+- **Markdown** - .md files
+- **GraphQL** - .graphql files
+- **Liquid** - .liquid templates
+
+### Other Languages
+
+- **Lua** - Formatted with stylua
+- **Python** - Formatted with isort (imports) + black
+
+## Keybindings
+
+<Card title="Manual Format" icon="brush">
+  `<leader>mp` - Format file or range (works in normal and visual mode)
+</Card>
+
+<Tip>
+In visual mode, `<leader>mp` formats only the selected range, not the entire file.
+</Tip>
+
+## Configuration
+
+### Formatters by File Type
+
+```lua lua/leyland/plugins/formatting.lua
+conform.setup({
+  formatters_by_ft = {
+    javascript = { "prettier" },
+    typescript = { "prettier" },
+    javascriptreact = { "prettier" },
+    typescriptreact = { "prettier" },
+    svelte = { "prettier" },
+    css = { "prettier" },
+    html = { "prettier" },
+    json = { "prettier" },
+    yaml = { "prettier" },
+    markdown = { "prettier" },
+    graphql = { "prettier" },
+    liquid = { "prettier" },
+    lua = { "stylua" },
+    python = { "isort", "black" },
+  },
+})
+```
+
+### Format on Save
+
+```lua
+format_on_save = {
+  lsp_fallback = true,
+  async = false,
+  timeout_ms = 3000,
+}
+```
+
+<AccordionGroup>
+  <Accordion title="LSP Fallback">
+    If no formatter is configured for a file type, Conform will use LSP formatting if available.
+  </Accordion>
+  
+  <Accordion title="Synchronous">
+    `async = false` ensures formatting completes before save, preventing unformatted code from being written.
+  </Accordion>
+  
+  <Accordion title="Timeout">
+    Formatting operations timeout after 3000ms (3 seconds) to prevent hanging.
+  </Accordion>
+</AccordionGroup>
+
+### Manual Format Options
+
+```lua lua/leyland/plugins/formatting.lua
+vim.keymap.set({ "n", "v" }, "<leader>mp", function()
+  conform.format({
+    lsp_fallback = true,
+    async = false,
+    timeout_ms = 1000,
+  })
+end, { desc = "Format file or range (in visual mode)" })
+```
+
+Manual formatting has a shorter timeout (1 second) for immediate feedback.
+
+## Formatters
+
+### Prettier
+
+Used for most web technologies. Prettier is an opinionated formatter that enforces consistent style.
+
+<Tabs>
+  <Tab title="Installation">
+    Prettier is automatically installed via Mason. See [LSP Configuration](/plugins/lsp) for details.
+  </Tab>
+  
+  <Tab title="Configuration">
+    Create a `.prettierrc` in your project root to customize Prettier settings:
+    ```json
+    {
+      "semi": true,
+      "singleQuote": true,
+      "tabWidth": 2,
+      "trailingComma": "es5"
+    }
+    ```
+  </Tab>
+</Tabs>
+
+### Stylua
+
+Lua formatter that follows Lua style guidelines.
+
+- Installed via Mason
+- Configurable with `stylua.toml`
+- Fast and reliable
+
+### Python Formatters
+
+Python uses two formatters in sequence:
+
+<Steps>
+  <Step title="isort">
+    Organizes and sorts import statements
+  </Step>
+  
+  <Step title="black">
+    Formats the rest of the Python code
+  </Step>
+</Steps>
+
+<Note>
+When multiple formatters are specified (like for Python), they run in order. Each formatter's output becomes the input for the next.
+</Note>
+
+## Usage Examples
+
+### Automatic Formatting
+
+Simply save any file:
+
+```vim
+:w
+```
+
+Conform automatically formats before writing the file.
+
+### Manual Formatting
+
+<Tabs>
+  <Tab title="Entire File">
+    In normal mode:
+    1. Press `<leader>mp`
+    2. File is formatted instantly
+  </Tab>
+  
+  <Tab title="Selected Range">
+    In visual mode:
+    1. Select the lines you want to format (visual line mode: `V`)
+    2. Press `<leader>mp`
+    3. Only the selection is formatted
+  </Tab>
+</Tabs>
+
+### Disable Format on Save
+
+If you need to save without formatting:
+
+```vim
+:noautocmd w
+```
+
+This bypasses autocommands, including format-on-save.
+
+## Formatter Installation
+
+All formatters are automatically installed via Mason:
+
+```lua
+ensure_installed = {
+  "prettier",
+  "stylua",
+  "isort",
+  "black",
+}
+```
+
+See the [LSP Configuration](/plugins/lsp) page for Mason setup details.
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Formatter Not Working">
+    1. Check if the formatter is installed: `:Mason`
+    2. Verify file type is correct: `:set filetype?`
+    3. Try manual format: `<leader>mp`
+    4. Check for errors: `:messages`
+  </Accordion>
+  
+  <Accordion title="Slow Formatting">
+    If formatting takes too long:
+    - Check the timeout settings
+    - Ensure formatters are installed locally (not downloading each time)
+    - Consider disabling format-on-save for large files
+  </Accordion>
+  
+  <Accordion title="Conflicting Styles">
+    If you have both Conform and LSP formatting:
+    - Conform takes priority for configured file types
+    - LSP formatting is used as fallback
+    - Disable LSP formatting if conflicts occur
+  </Accordion>
+</AccordionGroup>
+
+## Best Practices
+
+<Tip>
+Commit a `.prettierrc` or `stylua.toml` to your project repository to ensure consistent formatting across your team.
+</Tip>
+
+<Note>
+Format-on-save helps maintain consistent code style automatically, but you can always use `<leader>mp` to format before saving if needed.
+</Note>
+
+## See Also
+
+- [LSP Configuration](/plugins/lsp) - Formatter installation via Mason
+- [Treesitter](/plugins/treesitter) - Syntax-aware editing

@@ -1,0 +1,144 @@
+---
+title: Telescope
+description: Fuzzy finder for files, text, and more with powerful search capabilities
+---
+
+Telescope is a highly extendable fuzzy finder that provides fast and intuitive searching across files, text, keymaps, and more.
+
+## Features
+
+- Fuzzy file finding
+- Live grep (search text across files)
+- Recent files
+- Keymap finder
+- Todo comment search
+- FZF-native integration for faster performance
+
+## Keybindings
+
+<CardGroup cols={2}>
+  <Card title="Find Files" icon="file">
+    `<leader><leader>` - Fuzzy find files in current working directory
+  </Card>
+  
+  <Card title="Live Grep" icon="magnifying-glass">
+    `<leader>/` - Search for text string in current working directory
+  </Card>
+  
+  <Card title="Recent Files" icon="clock-rotate-left">
+    `<leader>fr` - Browse recently opened files
+  </Card>
+  
+  <Card title="Find Under Cursor" icon="text-slash">
+    `<leader>fc` - Search for string under cursor
+  </Card>
+  
+  <Card title="Find Todos" icon="list-check">
+    `<leader>ft` - Search for TODO comments
+  </Card>
+  
+  <Card title="Find Keymaps" icon="keyboard">
+    `<leader>fk` - Browse all configured keymaps
+  </Card>
+</CardGroup>
+
+## Configuration
+
+### Default Settings
+
+```lua lua/leyland/plugins/telescope.lua
+telescope.setup({
+  defaults = {
+    path_display = { "filename_first" },
+    mappings = {
+      i = {
+        ["<C-k>"] = actions.move_selection_previous,
+        ["<C-j>"] = actions.move_selection_next,
+        ["<C-q>"] = actions.send_selected_to_qflist + actions.open_qflist,
+      },
+    },
+  },
+  pickers = {
+    live_grep = {
+      path_display = { "truncate" },
+    },
+  },
+})
+```
+
+## Insert Mode Mappings
+
+When Telescope is open, use these keybindings in insert mode:
+
+<Steps>
+  <Step title="Navigate Results">
+    - `<C-k>` - Move to previous result
+    - `<C-j>` - Move to next result
+  </Step>
+  
+  <Step title="Send to Quickfix">
+    `<C-q>` - Send selected items to quickfix list and open it
+  </Step>
+</Steps>
+
+## Path Display
+
+Telescope is configured to show filename first, making it easier to identify files when you have multiple files with the same name in different directories.
+
+<Tip>
+For live grep searches, paths are truncated to save screen space and improve readability.
+</Tip>
+
+## Extensions
+
+### FZF Native
+
+The FZF native extension is enabled for significantly faster fuzzy finding performance:
+
+```lua
+telescope.load_extension("fzf")
+```
+
+This extension requires compilation (via `make`) but provides native C performance for sorting and filtering.
+
+## Dependencies
+
+Telescope depends on:
+
+- **plenary.nvim** - Lua utility functions
+- **telescope-fzf-native.nvim** - FZF algorithm for faster sorting
+- **nvim-web-devicons** - File icons
+- **todo-comments.nvim** - TODO comment integration
+
+## Usage Examples
+
+<Tabs>
+  <Tab title="Find Files">
+    Press `<leader><leader>` and start typing part of a filename. Telescope will fuzzy match your input and show matching files.
+    
+    Example: Type "conf" to find "config.lua", "configure.ts", etc.
+  </Tab>
+  
+  <Tab title="Search Text">
+    Press `<leader>/` and type the text you want to find. Results show in real-time as you type.
+    
+    This searches the actual content of files in your project.
+  </Tab>
+  
+  <Tab title="Recent Files">
+    Press `<leader>fr` to see a list of recently opened files, sorted by most recent.
+    
+    Great for quickly returning to files you were just working on.
+  </Tab>
+</Tabs>
+
+## Tips
+
+<Note>
+Use `<C-q>` to send multiple selected items (select with `<Tab>`) to the quickfix list. This is useful for batch operations or reviewing search results.
+</Note>
+
+## See Also
+
+- [Harpoon](/plugins/harpoon) - For pinning frequently used files
+- [File Explorer](/plugins/nvim-tree) - For browsing project structure

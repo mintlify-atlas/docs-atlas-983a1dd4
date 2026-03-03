@@ -1,0 +1,139 @@
+---
+title: LSP Configuration
+description: Language Server Protocol configuration with Mason for automatic server installation
+---
+
+The LSP configuration in nvim-luffy provides intelligent code completion, diagnostics, and language-specific features through the Language Server Protocol.
+
+## Overview
+
+The LSP setup consists of two main components:
+- **mason.nvim** - Automatic installation and management of LSP servers
+- **nvim-lspconfig** - Configuration and integration with Neovim's built-in LSP client
+
+## Installed Language Servers
+
+The following LSP servers are automatically installed via Mason:
+
+<AccordionGroup>
+  <Accordion title="Web Development">
+    - **ts_ls** - TypeScript and JavaScript
+    - **html** - HTML
+    - **cssls** - CSS
+    - **tailwindcss** - Tailwind CSS
+    - **svelte** - Svelte framework
+    - **emmet_ls** - Emmet abbreviations
+    - **eslint** - JavaScript/TypeScript linting
+  </Accordion>
+  
+  <Accordion title="Other Languages">
+    - **lua_ls** - Lua (with Neovim configuration support)
+    - **pyright** - Python
+    - **graphql** - GraphQL
+    - **prismals** - Prisma ORM
+  </Accordion>
+</AccordionGroup>
+
+## Configuration
+
+### Mason Setup
+
+The Mason configuration automatically installs LSP servers on first launch:
+
+```lua lua/leyland/plugins/lsp/mason.lua
+return {
+  {
+    "williamboman/mason-lspconfig.nvim",
+    opts = {
+      -- list of servers for mason to install
+      ensure_installed = {
+        "ts_ls",
+        "html",
+        "cssls",
+        "tailwindcss",
+        "svelte",
+        "lua_ls",
+        "graphql",
+        "emmet_ls",
+        "prismals",
+        "pyright",
+        "eslint",
+      },
+    },
+  },
+}
+```
+
+### LSP Capabilities
+
+The LSP configuration integrates with nvim-cmp for autocompletion:
+
+```lua lua/leyland/plugins/lsp/lsp.lua
+local cmp_nvim_lsp = require("cmp_nvim_lsp")
+local capabilities = cmp_nvim_lsp.default_capabilities()
+
+vim.lsp.config("*", {
+  capabilities = capabilities,
+})
+```
+
+## Additional Tools
+
+Mason also installs formatters and linters:
+
+<CardGroup cols={2}>
+  <Card title="Formatters" icon="brush">
+    - prettier (multi-language)
+    - stylua (Lua)
+    - isort (Python imports)
+    - black (Python)
+  </Card>
+  
+  <Card title="Linters" icon="check">
+    - eslint_d (JavaScript/TypeScript)
+    - pylint (Python)
+  </Card>
+</CardGroup>
+
+## Mason UI
+
+Mason provides a user-friendly interface for managing LSP servers and tools.
+
+### UI Icons
+
+- ✓ Package installed
+- ➜ Package pending installation
+- ✗ Package not installed
+
+### Opening Mason
+
+To open the Mason UI and manage your LSP servers:
+
+```vim
+:Mason
+```
+
+## Dependencies
+
+The LSP configuration includes these additional plugins:
+
+<Steps>
+  <Step title="nvim-lsp-file-operations">
+    Enables LSP file operations (rename, move files) with automatic import updates
+  </Step>
+  
+  <Step title="lazydev.nvim">
+    Provides proper Lua LSP configuration for Neovim plugin development
+  </Step>
+</Steps>
+
+## Troubleshooting
+
+<Note>
+If an LSP server isn't working, check the Mason UI with `:Mason` to ensure it's properly installed. You can also check LSP status with `:LspInfo`.
+</Note>
+
+## See Also
+
+- [Completion](/plugins/completion) - Learn about nvim-cmp integration
+- [Formatting](/plugins/formatting) - Configure code formatting with Conform

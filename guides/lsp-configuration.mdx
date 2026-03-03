@@ -1,0 +1,384 @@
+---
+title: LSP Configuration
+description: Configure Language Server Protocol (LSP) support and add new languages to nvim-luffy
+---
+
+## Overview
+
+nvim-luffy uses a comprehensive LSP setup with Mason for automatic server installation, nvim-lspconfig for server configuration, and nvim-cmp for autocompletion.
+
+## LSP Architecture
+
+The LSP configuration is split across several files:
+
+- `lua/leyland/plugins/lsp/mason.lua` - LSP server and tool installation
+- `lua/leyland/plugins/lsp/lsp.lua` - LSP capabilities setup
+- `lua/leyland/lsp.lua` - Keybindings and diagnostics
+- `lua/leyland/plugins/nvim-cmp.lua` - Completion configuration
+- `lua/leyland/plugins/formatting.lua` - Formatter configuration
+
+## Adding a New Language Server
+
+<Steps>
+  <Step title="Add server to Mason">
+    Open `lua/leyland/plugins/lsp/mason.lua` and add your language server to the `ensure_installed` list:
+
+    ```lua
+    {
+      "williamboman/mason-lspconfig.nvim",
+      opts = {
+        ensure_installed = {
+          "ts_ls",      -- TypeScript
+          "html",       -- HTML
+          "cssls",      -- CSS
+          "lua_ls",     -- Lua
+          "pyright",    -- Python
+          "rust_analyzer", -- Add Rust support
+          "gopls",      -- Add Go support
+        },
+      },
+    }
+    ```
+
+    Referenced in: `lua/leyland/plugins/lsp/mason.lua:4-19`
+  </Step>
+
+  <Step title="Add formatters and linters (optional)">
+    In the same file, add tools to `mason-tool-installer`:
+
+    ```lua
+    {
+      "WhoIsSethDaniel/mason-tool-installer.nvim",
+      opts = {
+        ensure_installed = {
+          "prettier",
+          "stylua",
+          "black",
+          "rustfmt",     -- Rust formatter
+          "gofumpt",     -- Go formatter
+          "golangci-lint", -- Go linter
+        },
+      },
+    }
+    ```
+
+    Referenced in: `lua/leyland/plugins/lsp/mason.lua:36-51`
+  </Step>
+
+  <Step title="Configure formatters">
+    Open `lua/leyland/plugins/formatting.lua` and add your language to the formatters list:
+
+    ```lua
+    conform.setup({
+      formatters_by_ft = {
+        javascript = { "prettier" },
+        typescript = { "prettier" },
+        lua = { "stylua" },
+        python = { "isort", "black" },
+        rust = { "rustfmt" },
+        go = { "gofumpt" },
+      },
+    })
+    ```
+
+    Referenced in: `lua/leyland/plugins/formatting.lua:7-23`
+  </Step>
+
+  <Step title="Restart and sync">
+    Restart Neovim and run `:Mason` to verify the language server is installed.
+
+    If it's not installed automatically, you can install it manually through the Mason UI.
+  </Step>
+</Steps>
+
+## LSP Keybindings
+
+Keybindings are automatically configured when an LSP server attaches to a buffer. These are defined in `lua/leyland/lsp.lua`:
+
+### Navigation Keybindings
+
+| Key | Action | Description |
+|-----|--------|-------------|
+| `gR` | LSP References | Show all references to symbol |
+| `gd` | Go to Definition | Jump to symbol definition |
+| `gi` | LSP Implementations | Show implementations |
+| `gt` | Type Definitions | Show type definitions |
+| `K` | Hover Documentation | Show documentation |
+
+Referenced in: `lua/leyland/lsp.lua:10-48`
+
+### Diagnostic Keybindings
+
+| Key | Action | Description |
+|-----|--------|-------------|
+| `<leader>d` | Line Diagnostics | Show diagnostics for current line |
+| `<leader>D` | Buffer Diagnostics | Show all diagnostics in buffer |
+| `[d` | Previous Diagnostic | Jump to previous diagnostic |
+| `]d` | Next Diagnostic | Jump to next diagnostic |
+
+Referenced in: `lua/leyland/lsp.lua:31-45`
+
+### Code Action Keybindings
+
+| Key | Action | Description |
+|-----|--------|-------------|
+| `<leader>ca` | Code Actions | Show available code actions |
+| `<leader>rn` | Rename Symbol | Rename symbol under cursor |
+| `<leader>rs` | Restart LSP | Restart the LSP server |
+
+Referenced in: `lua/leyland/lsp.lua:26-51`
+
+## Diagnostic Configuration
+
+Diagnostics are configured to only show errors as underlines and use custom icons:
+
+```lua
+vim.diagnostic.config({
+  underline = {
+    severity = { min = severity.ERROR },  -- Only underline errors
+  },
+  signs = {
+    text = {
+      [severity.ERROR] = " ",
+      [severity.WARN] = " ",
+      [severity.HINT] = "󰠠 ",
+      [severity.INFO] = " ",
+    },
+  },
+})
+```
+
+Referenced in: `lua/leyland/lsp.lua:57-71`
+
+To show underlines for all severities:
+
+```lua
+underline = true,  -- Replace the severity-based underline
+```
+
+## Autocompletion Setup
+
+The completion engine is configured in `lua/leyland/plugins/nvim-cmp.lua`:
+
+### Completion Sources
+
+```lua
+sources = cmp.config.sources({
+  { name = "nvim_lsp" },  -- LSP completions
+  { name = "luasnip" },   -- Snippets
+  { name = "buffer" },    -- Buffer text
+  { name = "path" },      -- File paths
+})
+```
+
+Referenced in: `lua/leyland/plugins/nvim-cmp.lua:53-58`
+
+### Completion Keybindings
+
+| Key | Action |
+|-----|--------|
+| `<C-k>` | Previous suggestion |
+| `<C-j>` | Next suggestion |
+| `<C-Space>` | Trigger completion |
+| `<CR>` | Confirm selection |
+| `<Tab>` | Next item or expand snippet |
+| `<C-e>` | Close completion menu |
+
+Referenced in: `lua/leyland/plugins/nvim-cmp.lua:34-51`
+
+## Advanced LSP Configuration
+
+### Custom Server Settings
+
+To configure server-specific settings, modify `lua/leyland/plugins/lsp/lsp.lua`:
+
+```lua
+return {
+  "hrsh7th/cmp-nvim-lsp",
+  config = function()
+    local cmp_nvim_lsp = require("cmp_nvim_lsp")
+    local capabilities = cmp_nvim_lsp.default_capabilities()
+
+    -- Configure all servers with default capabilities
+    vim.lsp.config("*", {
+      capabilities = capabilities,
+    })
+
+    -- Override specific server settings
+    vim.lsp.config("lua_ls", {
+      capabilities = capabilities,
+      settings = {
+        Lua = {
+          diagnostics = {
+            globals = { "vim" },  -- Recognize 'vim' global
+          },
+        },
+      },
+    })
+  end,
+}
+```
+
+Referenced in: `lua/leyland/plugins/lsp/lsp.lua:1-20`
+
+### Disable LSP Logging Noise
+
+LSP logging is set to error-only in `lua/leyland/core/options.lua`:
+
+```lua
+vim.lsp.set_log_level("error")  -- Only show errors, not warnings
+```
+
+Referenced in: `lua/leyland/core/options.lua:42`
+
+Change to `"debug"` for troubleshooting:
+
+```lua
+vim.lsp.set_log_level("debug")
+```
+
+## Language-Specific Examples
+
+### TypeScript/JavaScript
+
+```lua
+-- In mason.lua ensure_installed:
+"ts_ls",
+"eslint",
+
+-- In formatting.lua formatters_by_ft:
+javascript = { "prettier" },
+typescript = { "prettier" },
+javascriptreact = { "prettier" },
+typescriptreact = { "prettier" },
+```
+
+### Python
+
+```lua
+-- In mason.lua ensure_installed:
+"pyright",  -- LSP server
+
+-- In mason-tool-installer ensure_installed:
+"black",    -- Formatter
+"isort",    -- Import sorter
+"pylint",   -- Linter
+
+-- In formatting.lua formatters_by_ft:
+python = { "isort", "black" },
+```
+
+### Lua (Neovim Config)
+
+```lua
+-- In mason.lua ensure_installed:
+"lua_ls",
+
+-- In mason-tool-installer ensure_installed:
+"stylua",
+
+-- In formatting.lua formatters_by_ft:
+lua = { "stylua" },
+```
+
+## Format on Save
+
+Format on save is enabled by default with a 3-second timeout:
+
+```lua
+format_on_save = {
+  lsp_fallback = true,  -- Use LSP if no formatter available
+  async = false,
+  timeout_ms = 3000,
+}
+```
+
+Referenced in: `lua/leyland/plugins/formatting.lua:24-28`
+
+Manual formatting is available with `<leader>mp`.
+
+Referenced in: `lua/leyland/plugins/formatting.lua:31-37`
+
+## Treesitter Language Support
+
+For syntax highlighting, add parsers to `lua/leyland/plugins/treesitter.lua`:
+
+```lua
+require("nvim-treesitter").setup({
+  ensure_installed = {
+    "json", "javascript", "typescript", "tsx",
+    "yaml", "html", "css", "lua", "vim",
+    "markdown", "markdown_inline",
+    "rust",  -- Add new parsers here
+    "go",
+  },
+})
+```
+
+Referenced in: `lua/leyland/plugins/treesitter.lua:7-30`
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="LSP server not starting">
+    1. Check if the server is installed: `:Mason`
+    2. Check LSP status: `:LspInfo`
+    3. Check logs: `:LspLog`
+    4. Verify the server is in Mason's ensure_installed list
+    5. Try restarting: `<leader>rs` or `:LspRestart`
+  </Accordion>
+
+  <Accordion title="Completions not showing">
+    1. Ensure you're in insert mode
+    2. Check if LSP is attached: `:LspInfo`
+    3. Verify nvim-cmp sources include "nvim_lsp"
+    4. Try triggering manually with `<C-Space>`
+    5. Check for completion conflicts with other plugins
+  </Accordion>
+
+  <Accordion title="Formatter not working">
+    1. Verify formatter is installed: `:Mason`
+    2. Check formatter is configured for your filetype in `formatting.lua`
+    3. Try manual format: `<leader>mp`
+    4. Check conform.nvim log: `:ConformInfo`
+    5. Ensure the file is saved (some formatters require a file path)
+  </Accordion>
+
+  <Accordion title="Diagnostics too noisy">
+    Adjust diagnostic severity in `lua/leyland/lsp.lua`:
+    
+    ```lua
+    vim.diagnostic.config({
+      virtual_text = false,  -- Disable inline diagnostics
+      signs = true,
+      update_in_insert = false,  -- Don't update while typing
+      severity_sort = true,  -- Show errors first
+    })
+    ```
+  </Accordion>
+
+  <Accordion title="Wrong language server attaching">
+    Check for conflicting server configurations:
+    1. Run `:LspInfo` to see active servers
+    2. Look for multiple servers for the same filetype
+    3. Stop unwanted servers: `:LspStop server_name`
+    4. Configure server filetypes explicitly if needed
+  </Accordion>
+</AccordionGroup>
+
+## Additional Resources
+
+<CardGroup cols={2}>
+  <Card title="Mason" icon="hammer" href="https://github.com/williamboman/mason.nvim">
+    Package manager for LSP servers, formatters, and linters
+  </Card>
+  <Card title="nvim-lspconfig" icon="gear" href="https://github.com/neovim/nvim-lspconfig">
+    Quickstart configs for Neovim LSP
+  </Card>
+  <Card title="conform.nvim" icon="wand-magic-sparkles" href="https://github.com/stevearc/conform.nvim">
+    Lightweight formatter plugin
+  </Card>
+  <Card title="nvim-cmp" icon="list-check" href="https://github.com/hrsh7th/nvim-cmp">
+    Completion plugin for Neovim
+  </Card>
+</CardGroup>

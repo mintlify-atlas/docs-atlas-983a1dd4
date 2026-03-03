@@ -1,0 +1,272 @@
+---
+title: Git Integration
+description: Git operations with Neogit and diff viewing with Diffview
+---
+
+Nvim-luffy provides powerful git integration through Neogit (a Magit-inspired git interface) and Diffview (for viewing diffs and file history).
+
+## Neogit
+
+Neogit is a comprehensive git interface that brings the power of Magit to Neovim, offering an intuitive way to manage git operations.
+
+### Features
+
+- Interactive staging and unstaging
+- Commit management
+- Branch operations
+- Rebase and merge workflows
+- Floating window interface
+- Integration with Telescope and Diffview
+
+### Keybinding
+
+<Card title="Open Neogit" icon="git-alt">
+  `<leader>gg` - Open Neogit in floating window
+</Card>
+
+### Configuration
+
+```lua lua/leyland/plugins/neogit.lua
+return {
+  "NeogitOrg/neogit",
+  lazy = true,
+  dependencies = {
+    "nvim-lua/plenary.nvim",
+    "sindrets/diffview.nvim",
+    "nvim-telescope/telescope.nvim",
+    "ibhagwan/fzf-lua",
+    "nvim-mini/mini.pick",
+    "folke/snacks.nvim",
+  },
+  cmd = "Neogit",
+  keys = {
+    {
+      "<leader>gg",
+      function()
+        require("neogit").open({ kind = "floating" })
+      end,
+      desc = "Neogit (floating)",
+    },
+  },
+}
+```
+
+### Neogit Usage
+
+When you open Neogit with `<leader>gg`, you'll see:
+
+<Steps>
+  <Step title="Status View">
+    Overview of unstaged, staged, and untracked files
+  </Step>
+  
+  <Step title="Interactive Staging">
+    - `s` - Stage file or hunk
+    - `u` - Unstage file or hunk
+    - `Tab` - Toggle file diff
+  </Step>
+  
+  <Step title="Commit">
+    - `c` - Open commit menu
+    - `cc` - Create commit
+    - Write your message and save
+  </Step>
+  
+  <Step title="Other Operations">
+    - `p` - Push
+    - `P` - Pull
+    - `b` - Branch operations
+    - `r` - Rebase operations
+    - `?` - Show help
+  </Step>
+</Steps>
+
+<Tip>
+Neogit's interface is keyboard-driven. Press `?` inside Neogit to see all available keybindings.
+</Tip>
+
+## Diffview
+
+Diffview provides a clean interface for viewing git diffs, file history, and comparing branches.
+
+### Features
+
+- Side-by-side diff viewing
+- File history with diffs
+- Branch comparison
+- Merge conflict resolution
+- Integration with Neogit
+
+### Keybindings
+
+<CardGroup cols={2}>
+  <Card title="Open Diff" icon="code-compare">
+    `<leader>dd` - Open diff view for current changes
+  </Card>
+  
+  <Card title="Close Diff" icon="xmark">
+    `<leader>df` - Close diff view
+  </Card>
+  
+  <Card title="Branch Diff" icon="code-branch">
+    `<leader>ds` - Compare current branch to origin/main
+  </Card>
+</CardGroup>
+
+### Configuration
+
+```lua lua/leyland/plugins/diffview.lua
+return {
+  "sindrets/diffview.nvim",
+  cmd = { "DiffviewOpen", "DiffviewClose", "DiffviewToggleFiles", "DiffviewFocusFiles" },
+  keys = {
+    { "<leader>dd", "<cmd>DiffviewOpen<cr>", desc = "Open diff view" },
+    { "<leader>df", "<cmd>DiffviewClose<cr>", desc = "Close diff view" },
+    { "<leader>ds", "<cmd>:DiffviewOpen origin/main...HEAD<cr>", desc = "Open branch diff view" },
+  },
+}
+```
+
+### Diffview Usage
+
+<Tabs>
+  <Tab title="View Changes">
+    Press `<leader>dd` to see all uncommitted changes in a split view:
+    - Left: Original file
+    - Right: Modified file
+    - Navigate between files with `]c` and `[c`
+  </Tab>
+  
+  <Tab title="Compare Branches">
+    Press `<leader>ds` to compare your current branch with `origin/main`:
+    - See all commits in your branch
+    - Review all file changes
+    - Navigate through commits
+  </Tab>
+  
+  <Tab title="File History">
+    Run `:DiffviewFileHistory` to see the complete history of the current file:
+    - Browse all commits that modified the file
+    - See diffs for each commit
+    - Useful for understanding code evolution
+  </Tab>
+</Tabs>
+
+## Diffview Commands
+
+### Available Commands
+
+- `:DiffviewOpen` - Open diff view
+- `:DiffviewOpen HEAD~2` - Compare with 2 commits ago
+- `:DiffviewOpen origin/main...HEAD` - Compare branches
+- `:DiffviewClose` - Close diff view
+- `:DiffviewToggleFiles` - Toggle file panel
+- `:DiffviewFocusFiles` - Focus file panel
+- `:DiffviewFileHistory` - File history
+- `:DiffviewFileHistory %` - Current file history
+
+### Branch Comparison Syntax
+
+```vim
+:DiffviewOpen <base>...<head>
+```
+
+<AccordionGroup>
+  <Accordion title="Two Dots (..)">
+    Shows the diff between two points:
+    ```vim
+    :DiffviewOpen main..feature
+    ```
+    All changes between main and feature
+  </Accordion>
+  
+  <Accordion title="Three Dots (...)">
+    Shows changes since branches diverged:
+    ```vim
+    :DiffviewOpen main...feature
+    ```
+    Only changes unique to feature branch
+  </Accordion>
+</AccordionGroup>
+
+## Integration Between Tools
+
+Neogit and Diffview work seamlessly together:
+
+<Steps>
+  <Step title="Stage in Neogit">
+    Use Neogit (`<leader>gg`) for staging and committing
+  </Step>
+  
+  <Step title="Review in Diffview">
+    Open Diffview (`<leader>dd`) to review changes in detail
+  </Step>
+  
+  <Step title="Compare Branches">
+    Use `<leader>ds` to review all changes before merging
+  </Step>
+</Steps>
+
+## Git Workflow Example
+
+<Tabs>
+  <Tab title="Quick Commit">
+    1. Make your code changes
+    2. Press `<leader>gg` to open Neogit
+    3. Stage files with `s`
+    4. Press `cc` to commit
+    5. Write message and save
+    6. Press `p` then `p` to push
+  </Tab>
+  
+  <Tab title="Review Before Commit">
+    1. Make your code changes
+    2. Press `<leader>dd` to review all diffs
+    3. Navigate files with `]c` and `[c`
+    4. Press `<leader>df` to close Diffview
+    5. Press `<leader>gg` to open Neogit
+    6. Stage and commit
+  </Tab>
+  
+  <Tab title="Branch Comparison">
+    1. Complete your feature work
+    2. Press `<leader>ds` to compare with main
+    3. Review all changes in the branch
+    4. Close with `<leader>df`
+    5. Merge or create pull request
+  </Tab>
+</Tabs>
+
+## Dependencies
+
+Neogit includes optional integrations with:
+
+- **plenary.nvim** (required) - Lua utilities
+- **diffview.nvim** (optional) - Enhanced diff viewing
+- **telescope.nvim** (optional) - Fuzzy finding
+- **fzf-lua** (optional) - Alternative fuzzy finder
+- **mini.pick** (optional) - Minimal picker
+- **snacks.nvim** (optional) - UI enhancements
+
+<Note>
+Neogit is lazy-loaded and only initializes when you open it with `<leader>gg` or run `:Neogit`, keeping startup time fast.
+</Note>
+
+## Tips and Best Practices
+
+<Tip>
+Use Neogit for quick staging and commits. Use Diffview for detailed code review and understanding complex changes.
+</Tip>
+
+<Tip>
+Before merging a feature branch, use `<leader>ds` to review all changes at once. This helps catch issues before they reach main.
+</Tip>
+
+<Note>
+Diffview's three-dot syntax (`origin/main...HEAD`) is perfect for pull request reviews, showing only the changes you've made since branching.
+</Note>
+
+## See Also
+
+- [File Explorer](/plugins/nvim-tree) - Shows git status in file tree
+- [Telescope](/plugins/telescope) - Can search git commits and branches

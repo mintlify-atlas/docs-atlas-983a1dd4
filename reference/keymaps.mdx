@@ -1,0 +1,116 @@
+---
+title: Keymap Reference
+description: Complete reference of all keymaps in nvim-luffy
+---
+
+Complete keymap reference for nvim-luffy. Leader key is set to `<Space>`.
+
+## General Keymaps
+
+| Mode | Key | Action | Description | Source |
+|------|-----|--------|-------------|---------|
+| n | `<leader>\|` | `<C-w>v` | Split window vertically | core/keymaps.lua:11 |
+| n | `<leader>sh` | `<C-w>s` | Split window horizontally | core/keymaps.lua:12 |
+| n | `<leader>bd` | `:bd` | Close buffer | core/keymaps.lua:14 |
+| n | `<leader>ba` | `:%bd` | Close all buffers | core/keymaps.lua:15 |
+
+## LSP Keymaps
+
+These keymaps are available when an LSP server is attached to a buffer.
+
+| Mode | Key | Action | Description | Source |
+|------|-----|--------|-------------|---------|
+| n | `gR` | Telescope LSP references | Show LSP references | lsp.lua:11 |
+| n | `gd` | LSP declaration/definition | Go to declaration (also shows definition) | lsp.lua:14,17 |
+| n | `gi` | Telescope LSP implementations | Show LSP implementations | lsp.lua:20 |
+| n | `gt` | Telescope LSP type definitions | Show LSP type definitions | lsp.lua:23 |
+| n, v | `<leader>ca` | LSP code action | See available code actions | lsp.lua:26 |
+| n | `<leader>rn` | LSP rename | Smart rename | lsp.lua:29 |
+| n | `<leader>D` | Telescope diagnostics | Show buffer diagnostics | lsp.lua:32 |
+| n | `<leader>d` | Diagnostic float | Show line diagnostics | lsp.lua:35 |
+| n | `[d` | Jump to previous diagnostic | Go to previous diagnostic | lsp.lua:38-40 |
+| n | `]d` | Jump to next diagnostic | Go to next diagnostic | lsp.lua:43-45 |
+| n | `K` | LSP hover | Show documentation for what is under cursor | lsp.lua:48 |
+| n | `<leader>rs` | `:LspRestart` | Restart LSP | lsp.lua:51 |
+
+## Telescope Keymaps
+
+| Mode | Key | Action | Description | Source |
+|------|-----|--------|-------------|---------|
+| n | `<leader><leader>` | Find files | Fuzzy find files in cwd | plugins/telescope.lua:38 |
+| n | `<leader>fr` | Old files | Fuzzy find recent files | plugins/telescope.lua:39 |
+| n | `<leader>/` | Live grep | Find string in cwd | plugins/telescope.lua:40 |
+| n | `<leader>fc` | Grep string | Find string under cursor in cwd | plugins/telescope.lua:41 |
+| n | `<leader>ft` | TodoTelescope | Find todos | plugins/telescope.lua:42 |
+| n | `<leader>fk` | Telescope keymaps | Show all keymaps | plugins/telescope.lua:43 |
+| i | `<C-k>` | Move selection previous | Move to previous result | plugins/telescope.lua:20 |
+| i | `<C-j>` | Move selection next | Move to next result | plugins/telescope.lua:21 |
+| i | `<C-q>` | Send to quickfix | Send selected to quickfix list | plugins/telescope.lua:22 |
+
+## File Explorer (nvim-tree)
+
+| Mode | Key | Action | Description | Source |
+|------|-----|--------|-------------|---------|
+| n | `<leader>e` | NvimTreeFindFileToggle | Toggle file explorer | plugins/nvim-tree.lua:5 |
+| n | `l` | Open file/directory | Open (inside nvim-tree) | plugins/nvim-tree.lua:23 |
+| n | `h` | Close directory | Close parent directory (inside nvim-tree) | plugins/nvim-tree.lua:24 |
+
+## Harpoon
+
+| Mode | Key | Action | Description | Source |
+|------|-----|--------|-------------|---------|
+| n | `<leader>H` | Add file to harpoon | Harpoon current file | plugins/harpoon.lua:15-19 |
+| n | `<leader>h` | Harpoon menu | Harpoon quick menu | plugins/harpoon.lua:22-27 |
+| n | `<leader>1` | Select harpoon file 1 | Jump to harpoon file 1 | plugins/harpoon.lua:31-39 |
+| n | `<leader>2` | Select harpoon file 2 | Jump to harpoon file 2 | plugins/harpoon.lua:31-39 |
+| n | `<leader>3` | Select harpoon file 3 | Jump to harpoon file 3 | plugins/harpoon.lua:31-39 |
+| n | `<leader>4` | Select harpoon file 4 | Jump to harpoon file 4 | plugins/harpoon.lua:31-39 |
+| n | `<leader>5` | Select harpoon file 5 | Jump to harpoon file 5 | plugins/harpoon.lua:31-39 |
+| n | `<leader>6` | Select harpoon file 6 | Jump to harpoon file 6 | plugins/harpoon.lua:31-39 |
+| n | `<leader>7` | Select harpoon file 7 | Jump to harpoon file 7 | plugins/harpoon.lua:31-39 |
+| n | `<leader>8` | Select harpoon file 8 | Jump to harpoon file 8 | plugins/harpoon.lua:31-39 |
+| n | `<leader>9` | Select harpoon file 9 | Jump to harpoon file 9 | plugins/harpoon.lua:31-39 |
+
+## Git (Neogit & Diffview)
+
+| Mode | Key | Action | Description | Source |
+|------|-----|--------|-------------|---------|
+| n | `<leader>gg` | Neogit floating | Open Neogit (floating) | plugins/neogit.lua:14-20 |
+| n | `<leader>dd` | DiffviewOpen | Open diff view | plugins/diffview.lua:5 |
+| n | `<leader>df` | DiffviewClose | Close diff view | plugins/diffview.lua:6 |
+| n | `<leader>ds` | DiffviewOpen branch diff | Open branch diff view (origin/main...HEAD) | plugins/diffview.lua:7 |
+
+## Diagnostics (Trouble)
+
+| Mode | Key | Action | Description | Source |
+|------|-----|--------|-------------|---------|
+| n | `<leader>xx` | Trouble diagnostics toggle | Toggle Trouble diagnostics | plugins/trouble.lua:6 |
+
+## Flash (Motion)
+
+| Mode | Key | Action | Description | Source |
+|------|-----|--------|-------------|---------|
+| n, x, o | `s` | Flash jump | Flash jump to location | plugins/flash.lua:20 |
+| n, o, x | `S` | Flash treesitter | Flash treesitter selection | plugins/flash.lua:21 |
+| o | `r` | Remote flash | Remote flash | plugins/flash.lua:22 |
+| o, x | `R` | Treesitter search | Treesitter search | plugins/flash.lua:23 |
+| c | `<C-s>` | Toggle flash search | Toggle flash search in command mode | plugins/flash.lua:24 |
+| n, o, x | `<C-space>` | Treesitter incremental | Treesitter incremental selection | plugins/flash.lua:26-34 |
+
+### Flash Character Actions
+
+When using character motions (`f`, `t`, etc.):
+
+| Key | Action | Source |
+|-----|--------|--------|
+| `;` | Next match | plugins/flash.lua:11 |
+| `,` | Previous match | plugins/flash.lua:12 |
+
+## Mode Abbreviations
+
+- `n` - Normal mode
+- `i` - Insert mode
+- `v` - Visual mode
+- `x` - Visual mode (exclusive)
+- `o` - Operator-pending mode
+- `c` - Command-line mode

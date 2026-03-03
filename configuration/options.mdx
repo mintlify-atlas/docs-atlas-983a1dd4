@@ -1,0 +1,175 @@
+---
+title: 'Vim Options'
+description: 'Complete reference for all Vim options configured in nvim-luffy'
+---
+
+This page documents all Vim options set in `lua/leyland/core/options.lua`. These options control the editor behavior, appearance, and functionality.
+
+## File Explorer
+
+```lua
+vim.cmd("let g:netrw_liststyle = 3")
+```
+
+Sets netrw file explorer to use tree-style listing for better directory navigation.
+
+## Display Options
+
+<AccordionGroup>
+  <Accordion title="Line Numbers">
+    ```lua
+    opt.number = true
+    opt.relativenumber = true
+    ```
+    
+    - `number` - Show absolute line numbers in the gutter
+    - `relativenumber` - Show relative line numbers for easier motion commands
+    
+    <Tip>
+    Relative line numbers make it easier to use motion commands like `10j` or `5k` by showing the distance to each line.
+    </Tip>
+  </Accordion>
+
+  <Accordion title="Command Line & Status">
+    ```lua
+    opt.cmdheight = 0
+    opt.laststatus = 0
+    opt.winbar = "%f %h%m%r%=%l,%c %P"
+    ```
+    
+    - `cmdheight = 0` - Hide the command line when not in use for a cleaner interface
+    - `laststatus = 0` - Hide the statusline completely
+    - `winbar` - Display file information in the window bar with:
+      - `%f` - File path
+      - `%h` - Help buffer flag
+      - `%m` - Modified flag
+      - `%r` - Read-only flag
+      - `%l,%c` - Current line and column
+      - `%P` - Percentage through file
+  </Accordion>
+
+  <Accordion title="Visual Settings">
+    ```lua
+    opt.wrap = false
+    opt.background = "dark"
+    opt.signcolumn = "yes"
+    ```
+    
+    - `wrap = false` - Disable line wrapping for long lines
+    - `background = "dark"` - Use dark background for colorscheme compatibility
+    - `signcolumn = "yes"` - Always show the sign column to prevent text shifting when signs appear
+    
+    <Note>
+    The sign column is used by plugins like LSP, diagnostics, and git signs. Keeping it always visible prevents layout shifts.
+    </Note>
+  </Accordion>
+</AccordionGroup>
+
+## Indentation & Tabs
+
+```lua
+opt.tabstop = 2
+opt.shiftwidth = 2
+opt.expandtab = true
+opt.autoindent = true
+```
+
+- `tabstop = 2` - Display tabs as 2 spaces wide
+- `shiftwidth = 2` - Use 2 spaces for each indentation level
+- `expandtab = true` - Convert tabs to spaces when typing
+- `autoindent = true` - Copy indentation from current line when starting a new line
+
+<Tip>
+For more information about autoindent behavior, use `:h autoindent` in Neovim.
+</Tip>
+
+## Search Settings
+
+```lua
+opt.ignorecase = true
+opt.smartcase = true
+```
+
+- `ignorecase = true` - Make searches case-insensitive by default
+- `smartcase = true` - Override `ignorecase` when search pattern contains uppercase letters
+
+<Accordion title="Search Behavior Example">
+  With these settings:
+  - `/hello` matches "hello", "Hello", "HELLO" (case-insensitive)
+  - `/Hello` matches only "Hello" (case-sensitive because of uppercase)
+  
+  This provides intelligent case handling without manual toggling.
+</Accordion>
+
+## File Management
+
+```lua
+opt.swapfile = false
+```
+
+Disables swap file creation. This prevents `.swp` files from cluttering your workspace.
+
+<Note>
+Disabling swap files means you won't have crash recovery. Make sure to save your work frequently or use a git workflow.
+</Note>
+
+## Editing Behavior
+
+```lua
+opt.backspace = "indent,eol,start"
+```
+
+Configures backspace behavior in insert mode:
+- `indent` - Allow backspacing over autoindent
+- `eol` - Allow backspacing over line breaks (join lines)
+- `start` - Allow backspacing over the start of insert mode
+
+## Clipboard
+
+```lua
+opt.clipboard:append("unnamedplus")
+```
+
+Integrates Neovim with the system clipboard. All yank and delete operations use the system clipboard by default.
+
+<Tip>
+With this setting, you can copy from Neovim with `y` and paste into other applications, and vice versa.
+</Tip>
+
+## Window Splitting
+
+```lua
+opt.splitright = true
+opt.splitbelow = true
+```
+
+- `splitright = true` - Open vertical splits to the right of the current window
+- `splitbelow = true` - Open horizontal splits below the current window
+
+<Note>
+These settings provide more intuitive split behavior, following the natural reading direction (left-to-right, top-to-bottom).
+</Note>
+
+## LSP Configuration
+
+```lua
+vim.lsp.set_log_level("error")
+```
+
+Sets the LSP log level to only show errors, filtering out warnings and info messages for a cleaner experience.
+
+## Commented Options
+
+The following options are available but currently disabled:
+
+```lua
+-- opt.cursorline = true
+-- opt.termguicolors = true
+```
+
+- `cursorline` - Would highlight the current line
+- `termguicolors` - Would enable 24-bit RGB colors in the terminal
+
+<Tip>
+You can uncomment these in `lua/leyland/core/options.lua` if you want to enable them.
+</Tip>

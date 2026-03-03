@@ -1,0 +1,309 @@
+---
+title: Project Structure
+description: Understanding the nvim-luffy project structure and file organization
+---
+
+Overview of the nvim-luffy configuration structure and how different components are organized.
+
+## Root Structure
+
+```
+source/
+├── init.lua                    # Entry point that loads all modules
+└── lua/
+    └── leyland/               # Main configuration namespace
+        ├── core/              # Core Neovim configuration
+        ├── plugins/           # Plugin configurations
+        ├── lazy.lua           # Lazy.nvim plugin manager setup
+        └── lsp.lua            # LSP keymaps and diagnostics
+```
+
+## Entry Point
+
+### init.lua
+
+Location: `source/init.lua`
+
+The main entry point that bootstraps the configuration by loading three key modules:
+
+```lua
+require("leyland.core")   -- Core settings and keymaps
+require("leyland.lazy")   -- Plugin manager
+require("leyland.lsp")    -- LSP configuration
+```
+
+## Core Directory
+
+Location: `source/lua/leyland/core/`
+
+Contains fundamental Neovim configuration that doesn't depend on plugins.
+
+### core/init.lua
+
+Loads all core modules in sequence:
+
+```lua
+require("leyland.core.options")       -- Vim options
+require("leyland.core.keymaps")       -- General keymaps
+require("leyland.core.autocommands")  -- Autocommands
+```
+
+### core/options.lua
+
+**Purpose:** Configures Neovim options and settings
+
+**Key configurations:**
+- Line numbers and relative numbers
+- Tab and indentation settings (2 spaces)
+- Search settings (case-insensitive with smart case)
+- Split window behavior
+- Clipboard integration with system clipboard
+- LSP log level (errors only)
+- Custom winbar display
+- Disabled statusline and cmdheight for minimal UI
+
+**Notable settings:**
+```lua
+opt.tabstop = 2
+opt.shiftwidth = 2
+opt.expandtab = true
+opt.clipboard:append("unnamedplus")  -- System clipboard
+opt.laststatus = 0                   -- Hide statusline
+opt.cmdheight = 0                    -- Hide command line
+```
+
+### core/keymaps.lua
+
+**Purpose:** General keymaps not tied to specific plugins
+
+**Keymaps defined:**
+- Window splitting: `<leader>|` (vertical), `<leader>sh` (horizontal)
+- Buffer management: `<leader>bd` (close), `<leader>ba` (close all)
+- Leader key set to `<Space>`
+
+### core/autocommands.lua
+
+**Purpose:** Automatic commands triggered by events
+
+**Autocommands:**
+1. **Highlight on yank:** Briefly highlights yanked text
+2. **Auto-clear search highlights:** Automatically removes search highlights when cursor moves and no exact match is found
+
+## LSP Configuration
+
+Location: `source/lua/leyland/lsp.lua`
+
+**Purpose:** LSP-specific keymaps and diagnostic configuration
+
+**Features:**
+- Keymaps activated when LSP attaches to buffer
+- Navigation: Go to references, definitions, implementations, type definitions
+- Actions: Code actions, rename, restart LSP
+- Diagnostics: View and navigate diagnostics
+- Custom diagnostic signs with icons
+- Diagnostic underline for errors only
+
+**Diagnostic signs:**
+```lua
+ERROR: " "
+WARN:  " "
+HINT:  "󰠠 "
+INFO:  " "
+```
+
+## Plugin Management
+
+Location: `source/lua/leyland/lazy.lua`
+
+**Purpose:** Bootstrap and configure lazy.nvim plugin manager
+
+**Configuration:**
+- Auto-installs lazy.nvim if not present
+- Imports plugins from `leyland.plugins` and `leyland.plugins.lsp`
+- Plugin update checker enabled (silent)
+- Change detection enabled (silent)
+
+## Plugins Directory
+
+Location: `source/lua/leyland/plugins/`
+
+Each plugin has its own configuration file following lazy.nvim's plugin spec format.
+
+### plugins/init.lua
+
+Base plugin configurations that don't require extensive setup.
+
+### plugins/lsp/
+
+LSP-specific plugin configurations in a subdirectory.
+
+#### plugins/lsp/lsp.lua
+
+**Plugin:** cmp-nvim-lsp
+
+**Purpose:** LSP completion capabilities
+
+**Dependencies:**
+- nvim-lsp-file-operations (for file operation events)
+- lazydev.nvim (for Neovim Lua development)
+
+#### plugins/lsp/mason.lua
+
+**Plugins:** mason.nvim, mason-lspconfig.nvim, mason-tool-installer.nvim
+
+**Purpose:** LSP server, formatter, and linter installation
+
+**Auto-installed LSP servers:**
+- ts_ls, html, cssls, tailwindcss, svelte
+- lua_ls, graphql, emmet_ls, prismals
+- pyright, eslint
+
+**Auto-installed tools:**
+- Formatters: prettier, stylua, isort, black
+- Linters: pylint, eslint_d
+
+### plugins/telescope.lua
+
+**Plugin:** telescope.nvim
+
+**Purpose:** Fuzzy finder for files, strings, and more
+
+**Features:**
+- File finding, grep, recent files
+- LSP integration for references, implementations, etc.
+- Custom mappings in insert mode (`<C-k>`, `<C-j>`, `<C-q>`)
+- Filename-first display
+- FZF extension for performance
+
+### plugins/nvim-tree.lua
+
+**Plugin:** nvim-tree.lua
+
+**Purpose:** File explorer
+
+**Features:**
+- Opens on right side with 50 character width
+- Relative line numbers
+- Custom keymaps: `l` (open), `h` (close directory)
+- Custom folder icons
+- Git integration (shows ignored files)
+- Indent markers enabled
+
+### plugins/harpoon.lua
+
+**Plugin:** harpoon (v2)
+
+**Purpose:** Quick file navigation for frequently used files
+
+**Features:**
+- Add files to harpoon list
+- Quick menu to view harpooned files
+- Direct navigation to files 1-9 via `<leader>1` through `<leader>9`
+- Auto-save on toggle
+
+### plugins/neogit.lua
+
+**Plugin:** neogit
+
+**Purpose:** Git interface similar to magit
+
+**Features:**
+- Lazy-loaded on `:Neogit` command or `<leader>gg` keymap
+- Opens in floating window by default
+- Integrates with diffview, telescope, and snacks
+
+### plugins/diffview.lua
+
+**Plugin:** diffview.nvim
+
+**Purpose:** Git diff viewer
+
+**Features:**
+- Lazy-loaded on commands
+- Keymaps for opening/closing diff view
+- Branch comparison support (origin/main...HEAD)
+
+### plugins/trouble.lua
+
+**Plugin:** trouble.nvim
+
+**Purpose:** Pretty diagnostics list
+
+**Features:**
+- Toggle diagnostics panel with `<leader>xx`
+- Enhanced diagnostic viewing
+
+### plugins/flash.lua
+
+**Plugin:** flash.nvim
+
+**Purpose:** Fast motion/navigation with search labels
+
+**Features:**
+- Jump to any location with `s`
+- Treesitter-based selection with `S`
+- Remote flash for operator-pending mode
+- Custom character motion actions (`;` next, `,` prev)
+- Treesitter incremental selection with `<C-space>`
+
+### plugins/snacks.lua
+
+**Plugin:** snacks.nvim
+
+**Purpose:** Collection of useful small utilities
+
+**Features:**
+- Smooth scrolling enabled
+- Linear animation with 100ms total duration
+- 10ms step duration
+
+### Other Plugin Files
+
+- **alpha.lua:** Start screen/dashboard
+- **autopairs.lua:** Auto-close brackets and quotes
+- **colorscheme.lua:** Color scheme configuration
+- **formatting.lua:** Code formatting setup
+- **nvim-cmp.lua:** Autocompletion configuration
+- **treesitter.lua:** Syntax highlighting and parsing
+
+## Configuration Loading Order
+
+1. **init.lua** - Entry point
+2. **leyland.core** - Core configuration
+   - options.lua - Vim settings
+   - keymaps.lua - General keymaps
+   - autocommands.lua - Auto commands
+3. **leyland.lazy** - Plugin manager setup
+   - Loads all plugins from `leyland.plugins`
+   - Loads LSP plugins from `leyland.plugins.lsp`
+4. **leyland.lsp** - LSP keymaps and diagnostics
+
+## File Naming Conventions
+
+- **init.lua:** Module entry point, loads submodules
+- **Plugin files:** Named after the plugin they configure (e.g., `telescope.lua`, `nvim-tree.lua`)
+- **Subdirectories:** Group related plugins (e.g., `lsp/` for LSP-related plugins)
+- **Namespace:** All modules under `leyland.*` namespace
+
+## Extending the Configuration
+
+### Adding a New Plugin
+
+1. Create a new file in `lua/leyland/plugins/[plugin-name].lua`
+2. Return a lazy.nvim plugin spec table
+3. Lazy.nvim will auto-load it (imported in `lazy.lua`)
+
+### Adding Core Keymaps
+
+1. Edit `lua/leyland/core/keymaps.lua`
+2. Add keymap using `vim.keymap.set()`
+
+### Adding Vim Options
+
+1. Edit `lua/leyland/core/options.lua`
+2. Set options using `vim.opt.*`
+
+### Adding Autocommands
+
+1. Edit `lua/leyland/core/autocommands.lua`
+2. Use `vim.api.nvim_create_autocmd()`

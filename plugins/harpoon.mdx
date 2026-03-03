@@ -1,0 +1,152 @@
+---
+title: Harpoon
+description: Quick navigation system for your most frequently used files
+---
+
+Harpoon is a powerful file navigation plugin that lets you mark and quickly jump between your most important files. Think of it as a bookmarking system on steroids.
+
+## Overview
+
+Instead of searching for files repeatedly, Harpoon lets you:
+- Mark up to 9 files for instant access
+- Jump to any marked file with a single keypress
+- Manage your file list with a quick menu
+
+nvim-luffy uses Harpoon 2, the latest version with improved performance and features.
+
+## Key Concepts
+
+<Steps>
+  <Step title="Mark Files">
+    Add files to your Harpoon list as you work on them
+  </Step>
+  
+  <Step title="Quick Access">
+    Jump to any marked file using `<leader>` + number (1-9)
+  </Step>
+  
+  <Step title="Manage List">
+    View and reorder your marked files in the quick menu
+  </Step>
+</Steps>
+
+## Keybindings
+
+### Main Commands
+
+<CardGroup cols={2}>
+  <Card title="Add File" icon="plus">
+    `<leader>H` - Mark current file (add to Harpoon list)
+  </Card>
+  
+  <Card title="Quick Menu" icon="list">
+    `<leader>h` - Toggle Harpoon quick menu
+  </Card>
+</CardGroup>
+
+### Jump to Files
+
+Navigate to marked files instantly:
+
+- `<leader>1` - Jump to file 1
+- `<leader>2` - Jump to file 2
+- `<leader>3` - Jump to file 3
+- `<leader>4` - Jump to file 4
+- `<leader>5` - Jump to file 5
+- `<leader>6` - Jump to file 6
+- `<leader>7` - Jump to file 7
+- `<leader>8` - Jump to file 8
+- `<leader>9` - Jump to file 9
+
+## Configuration
+
+```lua lua/leyland/plugins/harpoon.lua
+return {
+  "ThePrimeagen/harpoon",
+  branch = "harpoon2",
+  opts = {
+    menu = {
+      width = vim.api.nvim_win_get_width(0) - 4,
+    },
+    settings = {
+      save_on_toggle = true,
+    },
+  },
+}
+```
+
+### Configuration Options
+
+<AccordionGroup>
+  <Accordion title="Menu Width">
+    The Harpoon menu automatically adjusts to your window width (current width - 4 characters)
+  </Accordion>
+  
+  <Accordion title="Save on Toggle">
+    Enabled - Your Harpoon list is automatically saved when you toggle the menu, persisting across Neovim sessions
+  </Accordion>
+</AccordionGroup>
+
+## Workflow Example
+
+Here's a typical Harpoon workflow:
+
+<Steps>
+  <Step title="Mark Your Core Files">
+    Open your main files and press `<leader>H` on each one:
+    - `main.ts` (position 1)
+    - `api.ts` (position 2)  
+    - `types.ts` (position 3)
+    - `tests.ts` (position 4)
+  </Step>
+  
+  <Step title="Jump Between Files">
+    Navigate instantly:
+    - `<leader>1` → main.ts
+    - `<leader>2` → api.ts
+    - `<leader>3` → types.ts
+    - `<leader>4` → tests.ts
+  </Step>
+  
+  <Step title="Manage Your List">
+    Press `<leader>h` to:
+    - View all marked files
+    - Reorder them (drag and drop)
+    - Remove files you no longer need
+  </Step>
+</Steps>
+
+## Tips and Best Practices
+
+<Tip>
+Mark files in order of importance or frequency of use. Put your most-accessed file at position 1 for the fastest access.
+</Tip>
+
+<Note>
+Harpoon lists are per-project. Each git repository or working directory has its own Harpoon list, which persists across sessions.
+</Note>
+
+## Comparison with Other Tools
+
+<Tabs>
+  <Tab title="Harpoon vs Telescope">
+    **Harpoon**: Pre-marked files, instant access, no searching
+    
+    **Telescope**: Dynamic file search, great for exploration
+    
+    Use both! Telescope for discovery, Harpoon for frequently-used files.
+  </Tab>
+  
+  <Tab title="Harpoon vs Buffers">
+    **Harpoon**: Curated list, persists across sessions, 9 files max
+    
+    **Buffers**: All open files, cleared when closing Neovim
+    
+    Harpoon is more intentional - you choose exactly which files matter.
+  </Tab>
+</Tabs>
+
+## See Also
+
+- [Telescope](/plugins/telescope) - For finding files dynamically
+- [File Explorer](/plugins/nvim-tree) - For browsing project structure

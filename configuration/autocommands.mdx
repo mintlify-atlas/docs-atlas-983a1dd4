@@ -1,0 +1,151 @@
+---
+title: 'Autocommands'
+description: 'Complete reference for all autocommands configured in nvim-luffy'
+---
+
+This page documents all autocommands configured in `lua/leyland/core/autocommands.lua`. Autocommands automatically execute actions in response to specific events.
+
+## Utility Functions
+
+```lua
+local function augroup(name)
+  return vim.api.nvim_create_augroup("lazyvim_" .. name, { clear = true })
+end
+```
+
+This helper function creates autocommand groups with the `lazyvim_` prefix and clears any existing autocommands in that group to prevent duplicates.
+
+## Highlight on Yank
+
+```lua
+vim.api.nvim_create_autocmd("TextYankPost", {
+  group = augroup("highlight_yank"),
+  callback = function()
+    (vim.hl or vim.highlight).on_yank()
+  end,
+})
+```
+
+<AccordionGroup>
+  <Accordion title="Configuration Details">
+    **Event:** `TextYankPost`  
+    **Group:** `lazyvim_highlight_yank`  
+    **Action:** Briefly highlight yanked (copied) text
+    
+    ### How It Works
+    
+    When you yank text with commands like `y`, `yy`, `yw`, etc., the yanked region will flash briefly with a highlight. This provides visual feedback confirming what was copied.
+    
+    ### Example
+    
+    1. Position cursor on a line
+    2. Press `yy` to yank the line
+    3. The line will briefly highlight to confirm the yank
+    
+    <Tip>
+    This visual feedback is especially helpful when yanking in visual mode or with complex motions, making it clear exactly what was copied.
+    </Tip>
+  </Accordion>
+</AccordionGroup>
+
+## Auto-Clear Search Highlights
+
+```lua
+vim.api.nvim_create_autocmd("CursorMoved", {
+  group = vim.api.nvim_create_augroup("auto-hlsearch", { clear = true }),
+  callback = function()
+    if vim.v.hlsearch == 1 and vim.fn.searchcount().exact_match == 0 then
+      vim.schedule(function()
+        vim.cmd.nohlsearch()
+      end)
+    end
+  end,
+})
+```
+
+<AccordionGroup>
+  <Accordion title="Configuration Details">
+    **Event:** `CursorMoved`  
+    **Group:** `auto-hlsearch`  
+    **Action:** Automatically clear search highlights when cursor moves away from matches
+    
+    ### How It Works
+    
+    This autocommand intelligently clears search highlights:
+    1. Triggers every time the cursor moves
+    2. Checks if search highlighting is currently active (`vim.v.hlsearch == 1`)
+    3. Checks if the cursor is on an exact match (`searchcount().exact_match == 0`)
+    4. If highlighting is on but cursor is not on a match, clears the highlights
+    
+    ### Behavior
+    
+    - When you search with `/` or `?`, matches are highlighted
+    - As you navigate with `n` and `N`, highlights remain visible
+    - When you move the cursor away from search results, highlights automatically disappear
+    - No need to manually run `:nohl` or use a keymap
+    
+    <Note>
+    This is why the `<leader>nh` keymap for clearing highlights is commented out in `keymaps.lua` - this autocommand handles it automatically.
+    </Note>
+    
+    ### Example Workflow
+    
+    1. Search for a word: `/function`
+    2. All instances of "function" are highlighted
+    3. Navigate through results with `n` and `N` - highlights stay
+    4. Move cursor elsewhere with `j`, `k`, or any motion
+    5. Highlights automatically clear
+    
+    <Tip>
+    This provides a clean editing experience by keeping highlights visible when needed but removing them when you're done searching.
+    </Tip>
+  </Accordion>
+</AccordionGroup>
+
+## Autocommand Groups
+
+All autocommands are organized into groups:
+
+| Group Name | Purpose |
+|------------|----------|
+| `lazyvim_highlight_yank` | Visual feedback for yank operations |
+| `auto-hlsearch` | Intelligent search highlight management |
+
+<Note>
+Groups are created with `{ clear = true }` to ensure autocommands don't duplicate when the configuration is reloaded.
+</Note>
+
+## Creating Custom Autocommands
+
+To add your own autocommands in `lua/leyland/core/autocommands.lua`:
+
+```lua
+-- Example: Auto-save when leaving insert mode
+vim.api.nvim_create_autocmd("InsertLeave", {
+  group = augroup("auto_save"),
+  callback = function()
+    if vim.bo.modified and vim.fn.expand("%") ~= "" then
+      vim.cmd("silent! write")
+    end
+  end,
+})
+```
+
+<Tip>
+Always use autocommand groups (with `augroup()`) to prevent duplicate autocommands when sourcing your config multiple times.
+</Tip>
+
+## Common Autocommand Events
+
+Here are some useful events you might want to use:
+
+- `BufEnter` - When entering a buffer
+- `BufWritePre` - Before writing a buffer to file
+- `FileType` - When file type is set
+- `VimResized` - When Vim window is resized
+- `InsertEnter`/`InsertLeave` - When entering/leaving insert mode
+- `TextChanged` - When text is modified
+
+<Tip>
+See `:h autocmd-events` in Neovim for a complete list of available events.
+</Tip>

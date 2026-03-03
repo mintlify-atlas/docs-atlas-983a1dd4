@@ -1,0 +1,141 @@
+---
+title: 'nvim-luffy'
+description: 'A powerful Neovim configuration built for the modern developer'
+---
+
+<img className="block dark:hidden" src="/images/hero-light.svg" alt="Hero Light" />
+<img className="hidden dark:block" src="/images/hero-dark.svg" alt="Hero Dark" />
+
+## Maybe the one piece was the commits we made along the way
+
+nvim-luffy is a carefully crafted Neovim configuration that brings together the best plugins and sensible defaults to create a powerful, efficient development environment. Built with Lua and lazy.nvim, it provides everything you need to write code productively.
+
+## Why nvim-luffy?
+
+<CardGroup cols={2}>
+  <Card title="Intelligent Code Completion" icon="brain" href="/plugins/completion">
+    LSP-powered autocompletion with nvim-cmp, snippets, and AI-like suggestions
+  </Card>
+  <Card title="Blazing Fast Navigation" icon="rocket" href="/plugins/telescope">
+    Jump between files instantly with Telescope and Harpoon
+  </Card>
+  <Card title="Beautiful Syntax Highlighting" icon="palette" href="/plugins/treesitter">
+    Treesitter-based parsing for accurate, colorful code display
+  </Card>
+  <Card title="Seamless Git Integration" icon="git-alt" href="/plugins/git-integration">
+    Manage your version control with Neogit and Diffview
+  </Card>
+</CardGroup>
+
+## Core Features
+
+### Language Server Protocol Support
+
+Built-in LSP configuration with Mason for automatic installation and management of language servers:
+
+- TypeScript/JavaScript (ts_ls, eslint)
+- Python (pyright, pylint)
+- Web technologies (HTML, CSS, Tailwind, Svelte)
+- Lua (lua_ls)
+- GraphQL, Prisma, and more
+
+<Note>
+All language servers are automatically installed on first launch via Mason, so you can start coding immediately.
+</Note>
+
+### Smart Auto-Completion
+
+Intelligent completion powered by nvim-cmp with multiple sources:
+
+- LSP-based code completion
+- Buffer text suggestions
+- File path completion
+- Snippet expansion with LuaSnip
+
+<Tip>
+Use `Tab` to cycle through suggestions and `Ctrl+Space` to trigger completion manually.
+</Tip>
+
+### Quick File Navigation
+
+**Telescope Fuzzy Finder:**
+- `Space Space` - Find files in current directory
+- `Space /` - Live grep search across your project
+- `Space fr` - Browse recent files
+- `Space fk` - Search keymaps
+
+**Harpoon for Instant Jumps:**
+- `Space H` - Mark current file
+- `Space h` - Open harpoon quick menu
+- `Space 1-9` - Jump to marked file by number
+
+### Syntax Highlighting
+
+Treesitter provides advanced syntax highlighting and code understanding for 29+ languages including:
+
+<CodeGroup>
+```typescript TypeScript/JavaScript
+import { useState } from 'react';
+
+function App() {
+  const [count, setCount] = useState(0);
+  return <div>{count}</div>;
+}
+```
+
+```python Python
+def fibonacci(n: int) -> int:
+    if n <= 1:
+        return n
+    return fibonacci(n-1) + fibonacci(n-2)
+```
+
+```lua Lua
+local function greet(name)
+    return "Hello, " .. name
+end
+```
+</CodeGroup>
+
+### Automatic Formatting
+
+Conform.nvim handles formatting with support for:
+- Prettier (JS/TS/CSS/HTML/JSON/Markdown)
+- Stylua (Lua)
+- Black & isort (Python)
+
+<Info>
+Formatting runs automatically on save, keeping your code clean without manual intervention.
+</Info>
+
+### Git Integration
+
+**Neogit** provides a Magit-like interface for Git operations:
+- `Space gg` - Open Neogit in floating window
+
+**Diffview** for visual diff inspection:
+- `Space dd` - Open diff view
+- `Space ds` - Compare your branch with origin/main
+- `Space df` - Close diff view
+
+### Colorscheme Options
+
+Choose from multiple carefully selected themes:
+- Catppuccin
+- Tokyo Night
+- Modus Themes
+- Bamboo (default)
+- One Dark
+- Rose Pine
+
+<CardGroup cols={3}>
+  <Card title="Quick Start" icon="play" href="/quickstart">
+    Get up and running in 5 minutes
+  </Card>
+  <Card title="Installation" icon="download" href="/installation">
+    Detailed installation instructions
+  </Card>
+  <Card title="Configuration" icon="gear" href="/configuration/options">
+    Customize to your preferences
+  </Card>
+</CardGroup>

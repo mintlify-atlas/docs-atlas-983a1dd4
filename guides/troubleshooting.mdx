@@ -1,0 +1,614 @@
+---
+title: Troubleshooting
+description: Common issues and solutions for nvim-luffy
+---
+
+## Getting Help
+
+Before diving into specific issues, here are some general diagnostic commands:
+
+- `:checkhealth` - Run health checks for Neovim and plugins
+- `:Lazy` - Open plugin manager UI to check for issues
+- `:Mason` - Check LSP servers and tools installation
+- `:LspInfo` - View attached language servers
+- `:messages` - View recent error messages
+
+## Installation Issues
+
+<AccordionGroup>
+  <Accordion title="lazy.nvim not installing automatically">
+    If lazy.nvim fails to bootstrap on first launch:
+
+    **Solution:**
+    
+    1. Manually clone lazy.nvim:
+    ```bash
+    git clone --filter=blob:none https://github.com/folke/lazy.nvim.git \
+      --branch=stable ~/.local/share/nvim/lazy/lazy.nvim
+    ```
+
+    2. Restart Neovim
+
+    3. Run `:Lazy sync`
+
+    **Referenced in:** `lua/leyland/lazy.lua:1-12`
+  </Accordion>
+
+  <Accordion title="Plugins not installing">
+    If plugins aren't installing after first launch:
+
+    **Symptoms:**
+    - Empty plugin list in `:Lazy`
+    - Missing functionality
+    - Errors about unknown commands
+
+    **Solution:**
+    
+    1. Check your network connection
+    2. Run `:Lazy sync` manually
+    3. Check `:Lazy` UI for specific error messages
+    4. Try removing lazy-lock.json and restarting:
+    ```bash
+    rm ~/.config/nvim/lazy-lock.json
+    ```
+  </Accordion>
+
+  <Accordion title="Permission errors during installation">
+    **Symptoms:**
+    - Errors about file permissions
+    - Unable to write to directories
+
+    **Solution:**
+    
+    Ensure your user has write access to:
+    - `~/.config/nvim/` (config directory)
+    - `~/.local/share/nvim/` (data directory)
+    - `~/.cache/nvim/` (cache directory)
+
+    Fix permissions:
+    ```bash
+    chmod -R u+w ~/.config/nvim
+    chmod -R u+w ~/.local/share/nvim
+    chmod -R u+w ~/.cache/nvim
+    ```
+  </Accordion>
+
+  <Accordion title="Git errors when cloning plugins">
+    **Symptoms:**
+    - SSL certificate errors
+    - Authentication failures
+    - Timeout errors
+
+    **Solution:**
+    
+    1. Ensure git is installed and up-to-date:
+    ```bash
+    git --version
+    ```
+
+    2. Configure git if needed:
+    ```bash
+    git config --global user.name "Your Name"
+    git config --global user.email "your.email@example.com"
+    ```
+
+    3. For SSL issues:
+    ```bash
+    git config --global http.sslVerify false
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Configuration Issues
+
+<AccordionGroup>
+  <Accordion title="Changes to config files not taking effect">
+    **Symptoms:**
+    - Modified settings don't apply
+    - Old keybindings still active
+
+    **Solution:**
+    
+    1. Restart Neovim completely (don't just `:source`)
+    2. Check for syntax errors: `:messages`
+    3. Verify file is being loaded:
+    ```lua
+    -- Add to top of file
+    print("Loading config file")
+    ```
+    4. Clear cache:
+    ```bash
+    rm -rf ~/.cache/nvim
+    ```
+  </Accordion>
+
+  <Accordion title="Lua syntax errors">
+    **Symptoms:**
+    - Error messages on startup
+    - Config not loading
+
+    **Common mistakes:**
+    
+    1. Missing commas in tables:
+    ```lua
+    -- Wrong
+    local opts = {
+      option1 = true
+      option2 = false  -- Missing comma!
+    }
+
+    -- Correct
+    local opts = {
+      option1 = true,
+      option2 = false,
+    }
+    ```
+
+    2. Incorrect string quotes:
+    ```lua
+    -- Use double quotes for strings
+    vim.cmd("colorscheme bamboo")
+    ```
+
+    3. Check `:messages` for the exact error line
+  </Accordion>
+
+  <Accordion title="Colorscheme not loading">
+    **Symptoms:**
+    - Default colors instead of chosen theme
+    - Error about colorscheme not found
+
+    **Solution:**
+    
+    1. Verify the colorscheme plugin is installed: `:Lazy`
+    
+    2. Check the colorscheme name is correct in `lua/leyland/plugins/colorscheme.lua:37`:
+    ```lua
+    vim.cmd.colorscheme("bamboo")  -- Use exact name
+    ```
+
+    3. Available themes in default config:
+    - `bamboo` (default)
+    - `catppuccin`
+    - `tokyonight`
+    - `modus_operandi` / `modus_vivendi`
+    - `onedark`
+    - `rose-pine`
+
+    4. Test manually:
+    ```vim
+    :colorscheme bamboo
+    ```
+  </Accordion>
+
+  <Accordion title="Keybindings not working">
+    **Symptoms:**
+    - Keymap doesn't trigger expected action
+    - No response when pressing keys
+
+    **Solution:**
+    
+    1. Check if keymap exists:
+    ```vim
+    :Telescope keymaps
+    ```
+    Search for your key combination
+
+    2. Check for conflicts:
+    - Multiple plugins might bind the same key
+    - Look for duplicate mappings in different config files
+
+    3. Verify leader key is set (`lua/leyland/core/keymaps.lua:1`):
+    ```lua
+    vim.g.mapleader = " "  -- Space is leader
+    ```
+
+    4. Test keymap manually:
+    ```vim
+    :map <leader>bd
+    ```
+
+    5. Ensure plugin is loaded (for plugin-specific keymaps):
+    ```vim
+    :Lazy load plugin-name
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## LSP Issues
+
+<AccordionGroup>
+  <Accordion title="LSP server not attaching to buffer">
+    **Symptoms:**
+    - No completions
+    - LSP keybindings not working
+    - `:LspInfo` shows no attached servers
+
+    **Solution:**
+    
+    1. Check if server is installed:
+    ```vim
+    :Mason
+    ```
+
+    2. Check server is in ensure_installed (`lua/leyland/plugins/lsp/mason.lua:6-18`)
+
+    3. Check LSP logs:
+    ```vim
+    :LspLog
+    ```
+
+    4. Manually start server:
+    ```vim
+    :LspStart
+    ```
+
+    5. Restart LSP:
+    ```vim
+    :LspRestart
+    ```
+    Or use `<leader>rs`
+
+    6. Check filetype is correct:
+    ```vim
+    :set filetype?
+    ```
+  </Accordion>
+
+  <Accordion title="Mason failing to install servers">
+    **Symptoms:**
+    - Installation errors in `:Mason`
+    - Missing LSP functionality
+
+    **Solution:**
+    
+    1. Check you have required dependencies:
+    ```bash
+    # Node.js (for many LSP servers)
+    node --version
+    npm --version
+
+    # Python (for some servers)
+    python3 --version
+    pip3 --version
+
+    # Build tools
+    make --version
+    gcc --version
+    ```
+
+    2. Run health check:
+    ```vim
+    :checkhealth mason
+    ```
+
+    3. Try manual installation:
+    - Open `:Mason`
+    - Press `i` on the server name to install
+    - Watch for error messages
+
+    4. Check Mason log:
+    ```vim
+    :MasonLog
+    ```
+  </Accordion>
+
+  <Accordion title="Diagnostics not showing">
+    **Symptoms:**
+    - No error indicators in gutter
+    - No diagnostic virtual text
+
+    **Solution:**
+    
+    1. Check diagnostic config (`lua/leyland/lsp.lua:59-71`):
+    ```lua
+    vim.diagnostic.config({
+      signs = true,  -- Ensure signs are enabled
+      underline = true,
+      virtual_text = true,  -- Add if you want inline text
+    })
+    ```
+
+    2. Check sign column is visible (`lua/leyland/core/options.lua:29`):
+    ```lua
+    opt.signcolumn = "yes"
+    ```
+
+    3. Verify LSP server provides diagnostics:
+    ```vim
+    :lua vim.diagnostic.get()
+    ```
+
+    4. Check diagnostic keybindings:
+    - `<leader>d` - Show line diagnostics
+    - `<leader>D` - Show buffer diagnostics
+  </Accordion>
+
+  <Accordion title="Format on save not working">
+    **Symptoms:**
+    - File not formatted when saving
+    - Manual format works but auto doesn't
+
+    **Solution:**
+    
+    1. Check formatter is installed:
+    ```vim
+    :Mason
+    ```
+
+    2. Verify formatter is configured (`lua/leyland/plugins/formatting.lua:8-23`):
+    ```lua
+    formatters_by_ft = {
+      lua = { "stylua" },
+      python = { "isort", "black" },
+      -- Add your filetype
+    }
+    ```
+
+    3. Check format_on_save is enabled (`lua/leyland/plugins/formatting.lua:24-28`)
+
+    4. Test manual format:
+    ```vim
+    <leader>mp
+    ```
+
+    5. Check conform status:
+    ```vim
+    :ConformInfo
+    ```
+
+    6. Increase timeout if formatting is slow:
+    ```lua
+    format_on_save = {
+      timeout_ms = 5000,  -- Increase from 3000
+    }
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Plugin Issues
+
+<AccordionGroup>
+  <Accordion title="Telescope not finding files">
+    **Symptoms:**
+    - Empty results when searching
+    - Missing recently edited files
+
+    **Solution:**
+    
+    1. Check you're in the right directory:
+    ```vim
+    :pwd
+    ```
+
+    2. Change directory:
+    ```vim
+    :cd /path/to/project
+    ```
+
+    3. Verify ripgrep is installed (for live_grep):
+    ```bash
+    rg --version
+    ```
+
+    4. Check file isn't in .gitignore (Telescope respects gitignore)
+
+    5. Use find_files with hidden files:
+    ```vim
+    :Telescope find_files hidden=true
+    ```
+
+    **Keybindings:** `lua/leyland/plugins/telescope.lua:38-43`
+  </Accordion>
+
+  <Accordion title="Treesitter highlighting broken">
+    **Symptoms:**
+    - No syntax highlighting
+    - Basic highlighting only
+    - Colors look wrong
+
+    **Solution:**
+    
+    1. Check parser is installed:
+    ```vim
+    :TSInstallInfo
+    ```
+
+    2. Install missing parser:
+    ```vim
+    :TSInstall python
+    ```
+
+    3. Update parsers:
+    ```vim
+    :TSUpdate
+    ```
+
+    4. Check parser health:
+    ```vim
+    :checkhealth nvim-treesitter
+    ```
+
+    5. Add language to ensure_installed (`lua/leyland/plugins/treesitter.lua:8-29`)
+
+    6. Ensure termguicolors is enabled (if using GUI colors):
+    ```lua
+    vim.opt.termguicolors = true
+    ```
+  </Accordion>
+
+  <Accordion title="Completion menu not showing">
+    **Symptoms:**
+    - No suggestions in insert mode
+    - Empty completion menu
+
+    **Solution:**
+    
+    1. Ensure you're in insert mode
+
+    2. Trigger manually:
+    ```
+    <C-Space>
+    ```
+
+    3. Check LSP is attached:
+    ```vim
+    :LspInfo
+    ```
+
+    4. Verify nvim-cmp sources (`lua/leyland/plugins/nvim-cmp.lua:53-58`):
+    ```lua
+    sources = cmp.config.sources({
+      { name = "nvim_lsp" },  -- LSP completions
+      { name = "buffer" },    -- Buffer text
+      { name = "path" },      -- File paths
+    })
+    ```
+
+    5. Check for completion conflicts with other plugins
+
+    6. Review completion keybindings (`lua/leyland/plugins/nvim-cmp.lua:34-51`)
+  </Accordion>
+
+  <Accordion title="Plugin lazy loading issues">
+    **Symptoms:**
+    - Plugin functionality not available
+    - Commands not found
+    - Keymaps not working until manual load
+
+    **Solution:**
+    
+    1. Check lazy loading configuration:
+    ```lua
+    -- Remove restrictive loading conditions
+    event = "VeryLazy",  -- Load after startup
+    lazy = false,        -- Don't lazy load
+    ```
+
+    2. Manually load plugin:
+    ```vim
+    :Lazy load plugin-name
+    ```
+
+    3. Check plugin status:
+    ```vim
+    :Lazy
+    ```
+
+    4. View load events:
+    ```vim
+    :Lazy profile
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Performance Issues
+
+<AccordionGroup>
+  <Accordion title="Slow startup time">
+    **Solution:**
+    
+    1. Profile startup:
+    ```bash
+    nvim --startuptime startup.log
+    ```
+
+    2. Check plugin profile:
+    ```vim
+    :Lazy profile
+    ```
+
+    3. Ensure plugins are lazy-loaded:
+    ```lua
+    event = { "BufReadPre", "BufNewFile" }
+    ```
+
+    4. Disable unused plugins
+
+    5. Use treesitter instead of regex-based highlighting
+  </Accordion>
+
+  <Accordion title="High memory usage">
+    **Solution:**
+    
+    1. Check loaded plugins:
+    ```vim
+    :Lazy
+    ```
+
+    2. Unload unused buffers:
+    ```vim
+    :bufdo bdelete
+    ```
+    Or use `<leader>ba`
+
+    3. Disable swap files if not needed (already done in `lua/leyland/core/options.lua:24`)
+
+    4. Reduce treesitter parsers to only what you need
+  </Accordion>
+
+  <Accordion title="Lag when typing">
+    **Solution:**
+    
+    1. Disable diagnostics in insert mode:
+    ```lua
+    vim.diagnostic.config({
+      update_in_insert = false,
+    })
+    ```
+
+    2. Reduce LSP features:
+    ```lua
+    -- Disable inlay hints if enabled
+    vim.lsp.inlay_hint.enable(false)
+    ```
+
+    3. Disable format on save for large files:
+    ```lua
+    format_on_save = function(bufnr)
+      -- Disable for large files
+      if vim.api.nvim_buf_line_count(bufnr) > 1000 then
+        return false
+      end
+      return { timeout_ms = 3000 }
+    end
+    ```
+
+    4. Check treesitter performance:
+    ```vim
+    :checkhealth nvim-treesitter
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Getting More Help
+
+If you're still experiencing issues:
+
+1. **Run health checks:**
+   ```vim
+   :checkhealth
+   ```
+
+2. **Check messages:**
+   ```vim
+   :messages
+   ```
+
+3. **Enable verbose logging:**
+   ```lua
+   -- In lua/leyland/core/options.lua
+   vim.lsp.set_log_level("debug")
+   ```
+
+4. **Review Neovim logs:**
+   ```bash
+   tail -f ~/.local/state/nvim/lsp.log
+   ```
+
+5. **Test with minimal config:**
+   Create a minimal `init.lua` to isolate the issue
+
+<Tip>
+Most issues can be diagnosed with `:checkhealth`, `:messages`, and `:Lazy`. Start there!
+</Tip>

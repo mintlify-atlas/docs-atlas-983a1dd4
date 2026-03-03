@@ -1,0 +1,198 @@
+---
+title: File Explorer
+description: Nvim-tree file explorer with custom keybindings and git integration
+---
+
+Nvim-tree is a fast, configurable file explorer that provides a tree-like view of your project structure with git integration and custom navigation.
+
+## Features
+
+- Tree-style file browser
+- Git status indicators
+- File icons
+- Relative line numbers
+- Custom keybindings for vim-like navigation
+- Right-side placement
+
+## Opening the Explorer
+
+<Card title="Toggle File Explorer" icon="folder-tree">
+  `<leader>e` - Toggle nvim-tree (opens to current file)
+</Card>
+
+The `NvimTreeFindFileToggle` command opens the tree and automatically highlights the current file.
+
+## Navigation Keybindings
+
+When the file explorer is open, use these keybindings:
+
+<CardGroup cols={2}>
+  <Card title="Open File/Folder" icon="folder-open">
+    `l` - Open file or expand directory
+  </Card>
+  
+  <Card title="Close Folder" icon="folder-closed">
+    `h` - Close directory (navigate to parent)
+  </Card>
+</CardGroup>
+
+<Tip>
+These custom `h` and `l` mappings make navigation feel more vim-like, matching the standard movement keys.
+</Tip>
+
+## Default Keybindings
+
+In addition to the custom mappings, all default nvim-tree keybindings are available:
+
+- `<CR>` - Edit file
+- `a` - Create new file/directory
+- `d` - Delete file/directory
+- `r` - Rename file/directory
+- `x` - Cut file/directory
+- `c` - Copy file/directory
+- `p` - Paste file/directory
+- `y` - Copy name to clipboard
+- `Y` - Copy relative path to clipboard
+- `gy` - Copy absolute path to clipboard
+- `R` - Refresh tree
+
+<Note>
+Press `g?` while in nvim-tree to see all available keybindings.
+</Note>
+
+## Configuration
+
+### View Settings
+
+```lua lua/leyland/plugins/nvim-tree.lua
+view = {
+  width = 50,
+  relativenumber = true,
+  side = "right",
+}
+```
+
+<AccordionGroup>
+  <Accordion title="Width">
+    The explorer is 50 characters wide, providing ample space for file names while preserving editor real estate.
+  </Accordion>
+  
+  <Accordion title="Relative Numbers">
+    Enabled for easier navigation with vim motions (e.g., `5j` to move down 5 files).
+  </Accordion>
+  
+  <Accordion title="Side Placement">
+    Opens on the right side of the screen, keeping your main code on the left.
+  </Accordion>
+</AccordionGroup>
+
+### Renderer Options
+
+```lua
+renderer = {
+  indent_markers = {
+    enable = true,
+  },
+  icons = {
+    glyphs = {
+      folder = {
+        arrow_closed = "",
+        arrow_open = "",
+      },
+    },
+  },
+}
+```
+
+**Indent Markers**: Visual lines showing folder hierarchy
+
+**Folder Icons**: Custom arrow glyphs for collapsed/expanded folders
+
+### Git Integration
+
+```lua
+git = {
+  ignore = false,
+}
+```
+
+Git-ignored files are shown (not hidden), with appropriate git status indicators.
+
+### File Filters
+
+```lua
+filters = {
+  custom = { ".DS_Store" },
+}
+```
+
+MacOS `.DS_Store` files are automatically hidden from the tree.
+
+## Custom Mappings
+
+The configuration includes a custom `on_attach` function:
+
+```lua lua/leyland/plugins/nvim-tree.lua
+local function on_attach(bufnr)
+  local function opts(desc)
+    return { 
+      desc = "nvim-tree: " .. desc, 
+      buffer = bufnr, 
+      noremap = true, 
+      silent = true, 
+      nowait = true 
+    }
+  end
+
+  -- Default mappings
+  api.config.mappings.default_on_attach(bufnr)
+
+  -- Custom mappings
+  vim.keymap.set("n", "l", api.node.open.edit, opts("Open"))
+  vim.keymap.set("n", "h", api.node.navigate.parent_close, opts("Close Directory"))
+end
+```
+
+## Additional Settings
+
+<Steps>
+  <Step title="Netrw Disabled">
+    Netrw (Neovim's built-in file explorer) is disabled to prevent conflicts:
+    ```lua
+    vim.g.loaded_netrw = 1
+    vim.g.loaded_netrwPlugin = 1
+    ```
+  </Step>
+  
+  <Step title="Window Picker Disabled">
+    Window picker is disabled for a simpler file opening experience:
+    ```lua
+    actions = {
+      open_file = {
+        window_picker = {
+          enable = false,
+        },
+      },
+    }
+    ```
+  </Step>
+</Steps>
+
+## Tips
+
+<Tip>
+Use nvim-tree for browsing and understanding project structure. For quick file access, use [Telescope](/plugins/telescope) or [Harpoon](/plugins/harpoon).
+</Tip>
+
+<Note>
+The file explorer automatically shows git status with colored indicators:
+- Green: New/staged files
+- Yellow: Modified files
+- Red: Deleted files
+</Note>
+
+## See Also
+
+- [Telescope](/plugins/telescope) - Fuzzy file finding
+- [Harpoon](/plugins/harpoon) - Quick file navigation
+- [Git Integration](/plugins/git-integration) - Git operations with Neogit

@@ -1,0 +1,128 @@
+---
+title: Command Reference
+description: All available commands and their usage in nvim-luffy
+---
+
+Complete reference of all commands available in nvim-luffy.
+
+## Built-in Commands
+
+These are standard Neovim commands used in the configuration:
+
+### Buffer Management
+
+| Command | Description | Source |
+|---------|-------------|--------|
+| `:bd` | Close current buffer | core/keymaps.lua:14 |
+| `:%bd` | Close all buffers | core/keymaps.lua:15 |
+
+### LSP Commands
+
+| Command | Description | Source |
+|---------|-------------|--------|
+| `:LspRestart` | Restart the LSP server | lsp.lua:51 |
+
+## Plugin Commands
+
+### File Explorer (nvim-tree)
+
+| Command | Description | Source |
+|---------|-------------|--------|
+| `:NvimTreeFindFileToggle` | Toggle file explorer and find current file | plugins/nvim-tree.lua:5 |
+| `:NvimTreeOpen` | Open file explorer | nvim-tree plugin |
+| `:NvimTreeClose` | Close file explorer | nvim-tree plugin |
+| `:NvimTreeFocus` | Focus on file explorer | nvim-tree plugin |
+| `:NvimTreeFindFile` | Find current file in tree | nvim-tree plugin |
+| `:NvimTreeCollapse` | Collapse file explorer tree | nvim-tree plugin |
+| `:NvimTreeRefresh` | Refresh file explorer | nvim-tree plugin |
+
+### Telescope
+
+| Command | Description | Source |
+|---------|-------------|--------|
+| `:Telescope find_files` | Fuzzy find files in current working directory | plugins/telescope.lua:38 |
+| `:Telescope oldfiles` | Fuzzy find recent files | plugins/telescope.lua:39 |
+| `:Telescope live_grep` | Search for string in current working directory | plugins/telescope.lua:40 |
+| `:Telescope grep_string` | Search for string under cursor | plugins/telescope.lua:41 |
+| `:Telescope keymaps` | Show all keymaps | plugins/telescope.lua:43 |
+| `:Telescope lsp_references` | Show LSP references | lsp.lua:11 |
+| `:Telescope lsp_implementations` | Show LSP implementations | lsp.lua:20 |
+| `:Telescope lsp_type_definitions` | Show LSP type definitions | lsp.lua:23 |
+| `:Telescope diagnostics bufnr=0` | Show diagnostics for current buffer | lsp.lua:32 |
+| `:TodoTelescope` | Find TODO comments | plugins/telescope.lua:42 |
+
+### Git (Neogit)
+
+| Command | Description | Source |
+|---------|-------------|--------|
+| `:Neogit` | Open Neogit | plugins/neogit.lua:12 |
+| `:Neogit kind=floating` | Open Neogit in floating window | plugins/neogit.lua:17 |
+
+### Diffview
+
+| Command | Description | Source |
+|---------|-------------|--------|
+| `:DiffviewOpen` | Open diff view | plugins/diffview.lua:5 |
+| `:DiffviewClose` | Close diff view | plugins/diffview.lua:6 |
+| `:DiffviewToggleFiles` | Toggle file panel in diff view | plugins/diffview.lua:3 |
+| `:DiffviewFocusFiles` | Focus on file panel | plugins/diffview.lua:3 |
+| `:DiffviewOpen origin/main...HEAD` | Open diff view comparing branch with main | plugins/diffview.lua:7 |
+
+### Diagnostics (Trouble)
+
+| Command | Description | Source |
+|---------|-------------|--------|
+| `:Trouble diagnostics toggle` | Toggle diagnostics panel | plugins/trouble.lua:6 |
+| `:Trouble diagnostics` | Open diagnostics panel | trouble plugin |
+| `:Trouble` | Open default trouble view | trouble plugin |
+
+### Package Management (Mason)
+
+| Command | Description | Source |
+|---------|-------------|--------|
+| `:Mason` | Open Mason UI | plugins/lsp/mason.lua |
+| `:MasonInstall [package]` | Install a package | mason plugin |
+| `:MasonUninstall [package]` | Uninstall a package | mason plugin |
+| `:MasonUpdate` | Update all packages | mason plugin |
+
+### Plugin Management (Lazy)
+
+| Command | Description | Source |
+|---------|-------------|--------|
+| `:Lazy` | Open Lazy plugin manager | lazy.lua |
+| `:Lazy sync` | Sync plugins (install/update/clean) | lazy plugin |
+| `:Lazy install` | Install missing plugins | lazy plugin |
+| `:Lazy update` | Update plugins | lazy plugin |
+| `:Lazy clean` | Remove unused plugins | lazy plugin |
+| `:Lazy check` | Check for plugin updates | lazy plugin |
+
+## LSP Installed Servers
+
+These language servers are automatically installed via Mason:
+
+| Server | Language | Source |
+|--------|----------|--------|
+| `ts_ls` | TypeScript/JavaScript | plugins/lsp/mason.lua:7 |
+| `html` | HTML | plugins/lsp/mason.lua:8 |
+| `cssls` | CSS | plugins/lsp/mason.lua:9 |
+| `tailwindcss` | Tailwind CSS | plugins/lsp/mason.lua:10 |
+| `svelte` | Svelte | plugins/lsp/mason.lua:11 |
+| `lua_ls` | Lua | plugins/lsp/mason.lua:12 |
+| `graphql` | GraphQL | plugins/lsp/mason.lua:13 |
+| `emmet_ls` | Emmet | plugins/lsp/mason.lua:14 |
+| `prismals` | Prisma | plugins/lsp/mason.lua:15 |
+| `pyright` | Python | plugins/lsp/mason.lua:16 |
+| `eslint` | ESLint | plugins/lsp/mason.lua:17 |
+
+## Formatters & Linters
+
+These tools are automatically installed via mason-tool-installer:
+
+| Tool | Purpose | Source |
+|------|---------|--------|
+| `prettier` | Formatter for web languages | plugins/lsp/mason.lua:40 |
+| `stylua` | Lua formatter | plugins/lsp/mason.lua:41 |
+| `isort` | Python import formatter | plugins/lsp/mason.lua:42 |
+| `black` | Python formatter | plugins/lsp/mason.lua:43 |
+| `pylint` | Python linter | plugins/lsp/mason.lua:44 |
+| `eslint_d` | Fast ESLint daemon | plugins/lsp/mason.lua:45 |

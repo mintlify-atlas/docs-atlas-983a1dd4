@@ -1,0 +1,247 @@
+---
+title: Treesitter
+description: Advanced syntax highlighting and code parsing with nvim-treesitter
+---
+
+Nvim-treesitter provides superior syntax highlighting, code navigation, and text objects using tree-sitter parsers for accurate code understanding.
+
+## Overview
+
+Treesitter builds an abstract syntax tree (AST) of your code, enabling:
+- Accurate syntax highlighting
+- Smart code navigation
+- Syntax-aware text objects
+- Better code folding
+- Incremental parsing for performance
+
+## Supported Languages
+
+The following language parsers are automatically installed:
+
+### Web Development
+
+<CardGroup cols={3}>
+  <Card title="JavaScript" icon="js">
+    javascript
+  </Card>
+  <Card title="TypeScript" icon="code">
+    typescript
+  </Card>
+  <Card title="TSX" icon="react">
+    tsx
+  </Card>
+  <Card title="HTML" icon="html5">
+    html
+  </Card>
+  <Card title="CSS" icon="css3">
+    css
+  </Card>
+  <Card title="Svelte" icon="code">
+    svelte
+  </Card>
+</CardGroup>
+
+### Data & Config
+
+- **json** - JSON files
+- **yaml** - YAML configuration
+- **graphql** - GraphQL schemas and queries
+- **prisma** - Prisma ORM schemas
+
+### Markup & Documentation
+
+- **markdown** - Markdown documents
+- **markdown_inline** - Inline markdown elements
+- **vimdoc** - Vim documentation
+
+### Programming Languages
+
+- **lua** - Lua scripts
+- **vim** - Vimscript
+- **c** - C language
+- **bash** - Bash scripts (also used for zsh)
+
+### Development Tools
+
+- **dockerfile** - Docker configuration
+- **gitignore** - Git ignore files
+- **query** - Treesitter queries
+
+## Configuration
+
+```lua lua/leyland/plugins/treesitter.lua
+return {
+  "nvim-treesitter/nvim-treesitter",
+  branch = "master",
+  event = { "BufReadPre", "BufNewFile" },
+  build = ":TSUpdate",
+  config = function()
+    require("nvim-treesitter").setup({
+      ensure_installed = {
+        "json",
+        "javascript",
+        "typescript",
+        "tsx",
+        "yaml",
+        "html",
+        "css",
+        "prisma",
+        "markdown",
+        "markdown_inline",
+        "svelte",
+        "graphql",
+        "bash",
+        "lua",
+        "vim",
+        "dockerfile",
+        "gitignore",
+        "query",
+        "vimdoc",
+        "c",
+      },
+    })
+  end,
+}
+```
+
+## Language Registration
+
+Zsh files are configured to use the bash parser:
+
+```lua
+vim.treesitter.language.register("bash", "zsh")
+```
+
+<Tip>
+This means `.zsh` files get proper syntax highlighting using the bash treesitter parser.
+</Tip>
+
+## Automatic Updates
+
+The build command ensures parsers stay up to date:
+
+```lua
+build = ":TSUpdate"
+```
+
+This automatically runs `:TSUpdate` when the plugin is installed or updated, keeping all parsers current.
+
+## Lazy Loading
+
+```lua
+event = { "BufReadPre", "BufNewFile" }
+```
+
+Treesitter loads before reading or creating files, ensuring syntax highlighting is immediately available.
+
+## Benefits Over Regex Highlighting
+
+<AccordionGroup>
+  <Accordion title="Context Awareness">
+    Treesitter understands code structure. For example, it knows the difference between a function name and a variable, even if they look the same.
+  </Accordion>
+  
+  <Accordion title="Consistency">
+    Highlighting is consistent across the entire file because treesitter parses the whole syntax tree, not just individual lines.
+  </Accordion>
+  
+  <Accordion title="Performance">
+    Incremental parsing means only changed portions of the file are re-parsed, making it fast even for large files.
+  </Accordion>
+  
+  <Accordion title="Multi-language Support">
+    In files with embedded languages (like JSX with CSS-in-JS), treesitter correctly highlights each language.
+  </Accordion>
+</AccordionGroup>
+
+## Treesitter Commands
+
+<Tabs>
+  <Tab title="Installation">
+    ```vim
+    :TSInstall <language>
+    ```
+    Install a specific language parser
+  </Tab>
+  
+  <Tab title="Update">
+    ```vim
+    :TSUpdate
+    ```
+    Update all installed parsers
+  </Tab>
+  
+  <Tab title="Status">
+    ```vim
+    :TSModuleInfo
+    ```
+    Show status of treesitter modules
+  </Tab>
+  
+  <Tab title="Playground">
+    ```vim
+    :TSPlaygroundToggle
+    ```
+    Open treesitter playground (requires plugin)
+  </Tab>
+</Tabs>
+
+## Advanced Features
+
+While the basic configuration focuses on syntax highlighting, treesitter enables many other features:
+
+<Steps>
+  <Step title="Syntax Highlighting">
+    Accurate, context-aware color coding (enabled by default)
+  </Step>
+  
+  <Step title="Code Navigation">
+    Jump between functions, classes, and other syntax nodes
+  </Step>
+  
+  <Step title="Text Objects">
+    Select entire functions, classes, or parameters with text objects
+  </Step>
+  
+  <Step title="Code Folding">
+    Fold code based on syntax structure
+  </Step>
+</Steps>
+
+<Note>
+The current configuration enables core treesitter functionality. Additional modules can be configured in the `setup()` function for incremental selection, indentation, and more.
+</Note>
+
+## Troubleshooting
+
+### Parser Not Working
+
+If syntax highlighting isn't working for a language:
+
+1. Check if the parser is installed:
+   ```vim
+   :TSModuleInfo
+   ```
+
+2. Try reinstalling the parser:
+   ```vim
+   :TSInstall! <language>
+   ```
+
+3. Update all parsers:
+   ```vim
+   :TSUpdate
+   ```
+
+### Performance Issues
+
+For very large files, you can disable treesitter:
+
+```vim
+:TSBufDisable highlight
+```
+
+## See Also
+
+- [LSP Configuration](/plugins/lsp) - Language server integration
+- [Completion](/plugins/completion) - Syntax-aware completions

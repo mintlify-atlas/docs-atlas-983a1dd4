@@ -1,0 +1,148 @@
+---
+title: 'Keymaps'
+description: 'Complete reference for all keyboard shortcuts configured in nvim-luffy'
+---
+
+This page documents all keymaps configured in `lua/leyland/core/keymaps.lua`. These keybindings enhance your workflow and provide quick access to common operations.
+
+## Leader Key
+
+```lua
+vim.g.mapleader = " "
+```
+
+The leader key is set to **Space**. This is used as a prefix for many custom keymaps.
+
+<Tip>
+The space bar is an excellent leader key choice because it's easy to reach with either thumb and doesn't conflict with common Vim motions.
+</Tip>
+
+## Window Management
+
+<AccordionGroup>
+  <Accordion title="Split Windows">
+    ### Vertical Split
+    
+    ```lua
+    keymap.set("n", "<leader>|", "<C-w>v", { desc = "Split window vertically" })
+    ```
+    
+    **Keymap:** `<Space>|`  
+    **Mode:** Normal  
+    **Action:** Split the current window vertically (side-by-side)
+    
+    <Note>
+    This creates a new vertical split to the right of the current window (due to `splitright = true`).
+    </Note>
+    
+    ---
+    
+    ### Horizontal Split
+    
+    ```lua
+    keymap.set("n", "<leader>sh", "<C-w>s", { desc = "Split window horizontally" })
+    ```
+    
+    **Keymap:** `<Space>sh`  
+    **Mode:** Normal  
+    **Action:** Split the current window horizontally (top and bottom)
+    
+    <Note>
+    This creates a new horizontal split below the current window (due to `splitbelow = true`).
+    </Note>
+  </Accordion>
+</AccordionGroup>
+
+## Buffer Management
+
+<AccordionGroup>
+  <Accordion title="Close Buffers">
+    ### Close Current Buffer
+    
+    ```lua
+    keymap.set("n", "<leader>bd", "<cmd>bd<CR>", { desc = "Close buffer" })
+    ```
+    
+    **Keymap:** `<Space>bd`  
+    **Mode:** Normal  
+    **Action:** Close the current buffer
+    
+    <Tip>
+    Think of "bd" as **b**uffer **d**elete. This closes the current file while keeping the window layout intact.
+    </Tip>
+    
+    ---
+    
+    ### Close All Buffers
+    
+    ```lua
+    keymap.set("n", "<leader>ba", "<cmd>%bd<CR>", { desc = "Close all buffers" })
+    ```
+    
+    **Keymap:** `<Space>ba`  
+    **Mode:** Normal  
+    **Action:** Close all open buffers
+    
+    <Note>
+    Think of "ba" as **b**uffer **a**ll. Use this to quickly clean up your workspace when you're done with a session.
+    </Note>
+  </Accordion>
+</AccordionGroup>
+
+## Disabled Keymaps
+
+The following keymaps are available but currently commented out in the configuration:
+
+<AccordionGroup>
+  <Accordion title="Insert Mode Escape">
+    ```lua
+    -- keymap.set("i", "jk", "<ESC>", {desc = "Exit Insert mode with jk"})
+    ```
+    
+    **Keymap:** `jk` (when uncommented)  
+    **Mode:** Insert  
+    **Action:** Exit insert mode (alternative to `<ESC>`)
+    
+    <Tip>
+    This is a popular mapping for quickly exiting insert mode without reaching for the Escape key. Uncomment in `lua/leyland/core/keymaps.lua` if you'd like to use it.
+    </Tip>
+  </Accordion>
+  
+  <Accordion title="Clear Search Highlights">
+    ```lua
+    -- keymap.set("n", "<leader>nh", ":nohl<CR>", { desc = "Clear search highlights" })
+    ```
+    
+    **Keymap:** `<Space>nh` (when uncommented)  
+    **Mode:** Normal  
+    **Action:** Clear search highlights
+    
+    <Note>
+    This keymap is currently disabled because search highlights are automatically cleared by the autocommand in `autocommands.lua`. See the [Autocommands](/configuration/autocommands#auto-clear-search-highlights) documentation for details.
+    </Note>
+  </Accordion>
+</AccordionGroup>
+
+## Quick Reference Table
+
+| Keymap | Mode | Description |
+|--------|------|-------------|
+| `<Space>\|` | Normal | Split window vertically |
+| `<Space>sh` | Normal | Split window horizontally |
+| `<Space>bd` | Normal | Close current buffer |
+| `<Space>ba` | Normal | Close all buffers |
+
+## Customizing Keymaps
+
+All keymaps are defined in `lua/leyland/core/keymaps.lua`. To add your own:
+
+```lua
+local keymap = vim.keymap
+
+-- Example: Add a keymap to save the current file
+keymap.set("n", "<leader>w", "<cmd>w<CR>", { desc = "Save file" })
+```
+
+<Tip>
+Always include a `desc` field in your keymap options. This description is used by which-key and other plugins to show helpful information.
+</Tip>

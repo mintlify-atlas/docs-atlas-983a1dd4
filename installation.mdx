@@ -1,0 +1,308 @@
+---
+title: 'Installation'
+description: 'Get nvim-luffy installed and ready to use'
+---
+
+## Prerequisites
+
+Before installing nvim-luffy, ensure you have the following installed:
+
+<Steps>
+  <Step title="Install Neovim 0.9+">
+    nvim-luffy requires Neovim version 0.9 or higher for Lua API support.
+
+    <CodeGroup>
+    ```bash macOS (Homebrew)
+    brew install neovim
+    ```
+
+    ```bash Ubuntu/Debian
+    sudo apt-get install neovim
+    ```
+
+    ```bash Arch Linux
+    sudo pacman -S neovim
+    ```
+
+    ```bash Build from source
+    git clone https://github.com/neovim/neovim
+    cd neovim && make CMAKE_BUILD_TYPE=RelWithDebInfo
+    sudo make install
+    ```
+    </CodeGroup>
+
+    Verify your installation:
+    ```bash
+    nvim --version
+    ```
+  </Step>
+
+  <Step title="Install Node.js and npm">
+    Required for many language servers (TypeScript, ESLint, etc.).
+
+    <CodeGroup>
+    ```bash macOS (Homebrew)
+    brew install node
+    ```
+
+    ```bash Ubuntu/Debian
+    curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
+    sudo apt-get install -y nodejs
+    ```
+
+    ```bash Using nvm (recommended)
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+    nvm install --lts
+    ```
+    </CodeGroup>
+  </Step>
+
+  <Step title="Install Python 3 and pip">
+    Required for Python language server and formatters.
+
+    <CodeGroup>
+    ```bash macOS (Homebrew)
+    brew install python3
+    ```
+
+    ```bash Ubuntu/Debian
+    sudo apt-get install python3 python3-pip
+    ```
+
+    ```bash Arch Linux
+    sudo pacman -S python python-pip
+    ```
+    </CodeGroup>
+  </Step>
+
+  <Step title="Install Git">
+    Required for plugin management and version control features.
+
+    <CodeGroup>
+    ```bash macOS (Homebrew)
+    brew install git
+    ```
+
+    ```bash Ubuntu/Debian
+    sudo apt-get install git
+    ```
+
+    ```bash Arch Linux
+    sudo pacman -S git
+    ```
+    </CodeGroup>
+  </Step>
+
+  <Step title="Install a Nerd Font (Optional but Recommended)">
+    For icons and proper symbol rendering in the UI.
+
+    Download and install a Nerd Font from [nerdfonts.com](https://www.nerdfonts.com/)
+
+    Popular choices:
+    - JetBrains Mono Nerd Font
+    - FiraCode Nerd Font
+    - Hack Nerd Font
+
+    <Tip>
+    After installing, configure your terminal to use the Nerd Font for proper icon display.
+    </Tip>
+  </Step>
+</Steps>
+
+## Installation Steps
+
+<Steps>
+  <Step title="Backup your existing Neovim configuration">
+    If you have an existing Neovim configuration, back it up first:
+
+    ```bash
+    # Backup your current config
+    mv ~/.config/nvim ~/.config/nvim.backup
+
+    # Backup your data directory (optional)
+    mv ~/.local/share/nvim ~/.local/share/nvim.backup
+    ```
+
+    <Warning>
+    This step is crucial if you want to preserve your existing setup. nvim-luffy will create a fresh configuration.
+    </Warning>
+  </Step>
+
+  <Step title="Clone nvim-luffy repository">
+    Clone the repository into your Neovim config directory:
+
+    ```bash
+    git clone https://github.com/yourusername/nvim-luffy.git ~/.config/nvim
+    ```
+
+    <Info>
+    Replace `yourusername` with the actual repository owner.
+    </Info>
+  </Step>
+
+  <Step title="Install lazy.nvim plugin manager">
+    nvim-luffy uses lazy.nvim for plugin management. It will be automatically installed on first launch.
+
+    The installation is handled by this code in `lua/leyland/lazy.lua`:
+
+    ```lua
+    local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+    if not vim.loop.fs_stat(lazypath) then
+      vim.fn.system({
+        "git",
+        "clone",
+        "--filter=blob:none",
+        "https://github.com/folke/lazy.nvim.git",
+        "--branch=stable",
+        lazypath,
+      })
+    end
+    ```
+
+    <Note>
+    No manual action needed - this happens automatically when you first launch Neovim.
+    </Note>
+  </Step>
+
+  <Step title="Launch Neovim and install plugins">
+    Start Neovim to trigger the automatic plugin installation:
+
+    ```bash
+    nvim
+    ```
+
+    lazy.nvim will:
+    1. Download and install all plugins
+    2. Mason will automatically install configured language servers
+    3. Treesitter will compile language parsers
+
+    This may take a few minutes on first launch.
+
+    <Tip>
+    You can check installation progress with `:Lazy` to open the lazy.nvim UI.
+    </Tip>
+  </Step>
+
+  <Step title="Verify LSP and formatter installation">
+    After plugins are installed, Mason will install language servers and formatters.
+
+    Check the status with:
+    ```vim
+    :Mason
+    ```
+
+    Automatically installed:
+
+    **Language Servers:**
+    - ts_ls (TypeScript)
+    - html, cssls, tailwindcss
+    - lua_ls (Lua)
+    - pyright (Python)
+    - eslint, graphql, prismals, svelte, emmet_ls
+
+    **Formatters & Linters:**
+    - prettier, stylua
+    - black, isort, pylint
+    - eslint_d
+
+    <Info>
+    Icons in Mason UI: ✓ (installed), ➜ (pending), ✗ (not installed)
+    </Info>
+  </Step>
+
+  <Step title="Set your preferred colorscheme">
+    The default colorscheme is Bamboo. To change it, edit `lua/leyland/plugins/colorscheme.lua`:
+
+    ```lua
+    vim.cmd.colorscheme("bamboo")  -- Change to your preference
+    ```
+
+    Available options:
+    - `catppuccin`
+    - `tokyonight`
+    - `modus_themes`
+    - `bamboo`
+    - `onedark`
+    - `rose-pine`
+  </Step>
+</Steps>
+
+## Verifying Installation
+
+Run these commands in Neovim to verify everything is working:
+
+<Accordion title="Check Neovim health">
+  ```vim
+  :checkhealth
+  ```
+  This will show you the status of all components and any missing dependencies.
+</Accordion>
+
+<Accordion title="Test LSP functionality">
+  Open a TypeScript or Python file and verify:
+  - Syntax highlighting works
+  - Autocompletion appears (Ctrl+Space)
+  - Hover documentation (K in normal mode)
+</Accordion>
+
+<Accordion title="Test Telescope">
+  Press `Space Space` to open file finder
+  - Should show fuzzy search interface
+  - Type to filter files
+</Accordion>
+
+<Accordion title="Test formatting">
+  Open a JavaScript file, make some formatting changes, and save
+  - File should auto-format with Prettier on save
+</Accordion>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Plugins won't install">
+    Try manually triggering installation:
+    ```vim
+    :Lazy sync
+    ```
+
+    If errors persist, check your internet connection and ensure Git is properly configured.
+  </Accordion>
+
+  <Accordion title="LSP not working">
+    Ensure language servers are installed:
+    ```vim
+    :Mason
+    ```
+
+    Manually install missing servers by navigating to them and pressing `i`.
+  </Accordion>
+
+  <Accordion title="Icons not displaying">
+    Install a Nerd Font and configure your terminal to use it. Without a Nerd Font, icons will appear as empty boxes or question marks.
+  </Accordion>
+
+  <Accordion title="Formatting not working">
+    Check if formatters are installed:
+    ```vim
+    :Mason
+    ```
+
+    Verify Conform is loaded:
+    ```vim
+    :ConformInfo
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Next Steps
+
+Now that you have nvim-luffy installed:
+
+<CardGroup cols={2}>
+  <Card title="Quick Start Guide" icon="rocket" href="/quickstart">
+    Learn the essential keybindings and workflows
+  </Card>
+  <Card title="Configuration" icon="sliders" href="/configuration/options">
+    Customize nvim-luffy to match your preferences
+  </Card>
+</CardGroup>

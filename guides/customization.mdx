@@ -1,0 +1,217 @@
+---
+title: Customization Guide
+description: Learn how to customize nvim-luffy to match your workflow and preferences
+---
+
+## Overview
+
+nvim-luffy is built with customization in mind. The configuration is organized into logical modules that you can easily modify to suit your needs.
+
+## Configuration Structure
+
+The configuration is located in `lua/leyland/` and organized as follows:
+
+```
+lua/leyland/
+├── core/           # Core Neovim settings
+│   ├── options.lua
+│   ├── keymaps.lua
+│   └── autocommands.lua
+├── plugins/        # Plugin configurations
+│   └── lsp/        # LSP-specific plugins
+├── lazy.lua        # Plugin manager setup
+└── lsp.lua         # LSP keybindings and diagnostics
+```
+
+## Customizing Core Settings
+
+<Steps>
+  <Step title="Edit options.lua">
+    Open `lua/leyland/core/options.lua` to modify Neovim options:
+
+    ```lua
+    local opt = vim.opt
+
+    -- Line numbers
+    opt.relativenumber = true
+    opt.number = true
+
+    -- Indentation (change to 4 spaces if preferred)
+    opt.tabstop = 2
+    opt.shiftwidth = 2
+    opt.expandtab = true
+
+    -- Window splits
+    opt.splitright = true
+    opt.splitbelow = true
+    ```
+
+    Referenced in: `lua/leyland/core/options.lua:1-43`
+  </Step>
+
+  <Step title="Customize keymaps">
+    Edit `lua/leyland/core/keymaps.lua` to add or modify keybindings:
+
+    ```lua
+    vim.g.mapleader = " "  -- Space as leader key
+    local keymap = vim.keymap
+
+    -- Window management
+    keymap.set("n", "<leader>|", "<C-w>v", { desc = "Split window vertically" })
+    keymap.set("n", "<leader>sh", "<C-w>s", { desc = "Split window horizontally" })
+
+    -- Buffer management
+    keymap.set("n", "<leader>bd", "<cmd>bd<CR>", { desc = "Close buffer" })
+    keymap.set("n", "<leader>ba", "<cmd>%bd<CR>", { desc = "Close all buffers" })
+    ```
+
+    Referenced in: `lua/leyland/core/keymaps.lua:1-16`
+  </Step>
+
+  <Step title="Add autocommands">
+    Create custom autocommands in `lua/leyland/core/autocommands.lua`:
+
+    ```lua
+    -- Highlight yanked text
+    vim.api.nvim_create_autocmd("TextYankPost", {
+      group = vim.api.nvim_create_augroup("highlight_yank", { clear = true }),
+      callback = function()
+        vim.highlight.on_yank()
+      end,
+    })
+
+    -- Auto-clear search highlights
+    vim.api.nvim_create_autocmd("CursorMoved", {
+      callback = function()
+        if vim.v.hlsearch == 1 and vim.fn.searchcount().exact_match == 0 then
+          vim.cmd.nohlsearch()
+        end
+      end,
+    })
+    ```
+
+    Referenced in: `lua/leyland/core/autocommands.lua:1-23`
+  </Step>
+</Steps>
+
+## Changing the Colorscheme
+
+The configuration includes multiple colorscheme options. To change your theme:
+
+<Steps>
+  <Step title="View available themes">
+    Open `lua/leyland/plugins/colorscheme.lua` to see installed themes:
+
+    - catppuccin
+    - tokyonight
+    - modus-themes
+    - bamboo (default)
+    - onedark
+    - rose-pine
+
+    Referenced in: `lua/leyland/plugins/colorscheme.lua:1-41`
+  </Step>
+
+  <Step title="Set your preferred theme">
+    Edit the colorscheme configuration:
+
+    ```lua
+    {
+      "rose-pine/neovim",
+      name = "rose-pine",
+      priority = 1000,
+      config = function()
+        -- Change to your preferred theme
+        vim.cmd.colorscheme("tokyonight")
+      end,
+    }
+    ```
+
+    Referenced in: `lua/leyland/plugins/colorscheme.lua:31-39`
+  </Step>
+
+  <Step title="Install additional themes">
+    Add new colorscheme plugins to the same file:
+
+    ```lua
+    {
+      "dracula/vim",
+      name = "dracula",
+      priority = 1000,
+    }
+    ```
+  </Step>
+</Steps>
+
+## Customizing the UI
+
+### Statusline and Winbar
+
+The configuration uses a minimal UI with a custom winbar:
+
+```lua
+-- In lua/leyland/core/options.lua
+opt.cmdheight = 0          -- Minimal command line
+opt.laststatus = 0         -- Hide statusline
+opt.winbar = "%f %h%m%r%=%l,%c %P"  -- File info in window bar
+```
+
+Customize the winbar format:
+- `%f` - filename
+- `%h%m%r` - help/modified/readonly flags
+- `%=` - right align
+- `%l,%c` - line,column
+- `%P` - percentage through file
+
+Referenced in: `lua/leyland/core/options.lua:4-6`
+
+### Sign Column Icons
+
+Diagnostic signs are configured in `lua/leyland/lsp.lua`:
+
+```lua
+vim.diagnostic.config({
+  signs = {
+    text = {
+      [severity.ERROR] = " ",
+      [severity.WARN] = " ",
+      [severity.HINT] = "󰠠 ",
+      [severity.INFO] = " ",
+    },
+  },
+})
+```
+
+Referenced in: `lua/leyland/lsp.lua:59-71`
+
+## Format on Save Configuration
+
+Customize format-on-save behavior in `lua/leyland/plugins/formatting.lua`:
+
+```lua
+conform.setup({
+  format_on_save = {
+    lsp_fallback = true,
+    async = false,
+    timeout_ms = 3000,  -- Increase if needed
+  },
+})
+```
+
+To disable format-on-save, remove the `format_on_save` block or set it to `false`.
+
+Referenced in: `lua/leyland/plugins/formatting.lua:24-28`
+
+## Tips
+
+<Tip>
+After making changes to your configuration, reload Neovim or use `:source %` to apply changes immediately.
+</Tip>
+
+<Tip>
+Use `:checkhealth` to diagnose configuration issues and ensure all dependencies are properly installed.
+</Tip>
+
+<Warning>
+When modifying plugin configurations, be careful not to break lazy loading. The `event`, `cmd`, and `keys` options control when plugins load.
+</Warning>

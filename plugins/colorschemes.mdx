@@ -1,0 +1,283 @@
+---
+title: Colorschemes
+description: Available colorschemes and theme configuration in nvim-luffy
+---
+
+Nvim-luffy comes with multiple high-quality colorschemes pre-installed, allowing you to choose the theme that best suits your preferences.
+
+## Installed Themes
+
+All themes are loaded with high priority to ensure they're available at startup.
+
+<CardGroup cols={2}>
+  <Card title="Catppuccin" icon="mug-hot">
+    Soothing pastel theme with multiple flavors (Mocha, Macchiato, Frappe, Latte)
+  </Card>
+  
+  <Card title="Tokyo Night" icon="moon">
+    Clean, dark theme inspired by VS Code's Tokyo Night
+  </Card>
+  
+  <Card title="Modus Themes" icon="sun">
+    Highly accessible themes with excellent contrast
+  </Card>
+  
+  <Card title="Bamboo" icon="leaf">
+    Warm, nature-inspired theme with soft colors
+  </Card>
+  
+  <Card title="OneDark" icon="circle">
+    Classic theme inspired by Atom's One Dark
+  </Card>
+  
+  <Card title="Rose Pine" icon="rose">
+    Low-contrast theme with a warm, cozy feel
+  </Card>
+</CardGroup>
+
+## Default Theme
+
+The default theme is set to **Bamboo**:
+
+```lua lua/leyland/plugins/colorscheme.lua
+config = function()
+  vim.cmd.colorscheme("bamboo")
+end
+```
+
+## Switching Themes
+
+To change your colorscheme, use the `:colorscheme` command:
+
+<Tabs>
+  <Tab title="Catppuccin">
+    ```vim
+    :colorscheme catppuccin
+    :colorscheme catppuccin-mocha
+    :colorscheme catppuccin-macchiato
+    :colorscheme catppuccin-frappe
+    :colorscheme catppuccin-latte
+    ```
+  </Tab>
+  
+  <Tab title="Tokyo Night">
+    ```vim
+    :colorscheme tokyonight
+    :colorscheme tokyonight-night
+    :colorscheme tokyonight-storm
+    :colorscheme tokyonight-day
+    :colorscheme tokyonight-moon
+    ```
+  </Tab>
+  
+  <Tab title="Other Themes">
+    ```vim
+    :colorscheme bamboo
+    :colorscheme rose-pine
+    :colorscheme rose-pine-moon
+    :colorscheme rose-pine-dawn
+    :colorscheme onedark
+    :colorscheme modus
+    :colorscheme modus_vivendi
+    :colorscheme modus_operandi
+    ```
+  </Tab>
+</Tabs>
+
+## Making Your Choice Permanent
+
+To set your preferred theme as the default:
+
+<Steps>
+  <Step title="Open the colorscheme plugin file">
+    Navigate to `lua/leyland/plugins/colorscheme.lua`
+  </Step>
+  
+  <Step title="Modify the config function">
+    Change the colorscheme name in the Rose Pine config:
+    ```lua
+    config = function()
+      vim.cmd.colorscheme("your-theme-here")
+    end
+    ```
+  </Step>
+  
+  <Step title="Restart Neovim">
+    Restart Neovim or run `:source %` to apply changes
+  </Step>
+</Steps>
+
+## Theme Details
+
+### Catppuccin
+
+```lua
+{
+  "catppuccin/nvim",
+  name = "catppuccin",
+  priority = 1000,
+}
+```
+
+**Flavors:**
+- **Mocha** - Dark with warm tones
+- **Macchiato** - Medium dark
+- **Frappe** - Cooler dark variant
+- **Latte** - Light theme
+
+### Tokyo Night
+
+```lua
+{
+  "folke/tokyonight.nvim",
+  priority = 1000,
+}
+```
+
+**Variants:**
+- **Night** - Deep blue night
+- **Storm** - Darker blue variant
+- **Day** - Light variant
+- **Moon** - Purple-tinted dark
+
+### Modus Themes
+
+```lua
+{
+  "miikanissi/modus-themes.nvim",
+  priority = 1000,
+}
+```
+
+Designed for accessibility with WCAG AAA compliance:
+- **Modus Vivendi** - Dark, high contrast
+- **Modus Operandi** - Light, high contrast
+
+### Bamboo
+
+```lua
+{
+  "ribru17/bamboo.nvim",
+  lazy = false,
+  priority = 1000,
+}
+```
+
+Warm, nature-inspired colorscheme (current default).
+
+### OneDark
+
+```lua
+{
+  "navarasu/onedark.nvim",
+  priority = 1000,
+}
+```
+
+Port of Atom's iconic One Dark theme. Configuration shown but commented out:
+
+```lua
+-- config = function()
+--   require("onedark").setup({
+--     style = "deep",
+--   })
+--   require("onedark").load()
+-- end,
+```
+
+**Styles:** `dark`, `darker`, `cool`, `deep`, `warm`, `warmer`
+
+### Rose Pine
+
+```lua
+{
+  "rose-pine/neovim",
+  name = "rose-pine",
+  priority = 1000,
+}
+```
+
+**Variants:**
+- **Rose Pine** - Base variant
+- **Rose Pine Moon** - Medium contrast
+- **Rose Pine Dawn** - Light variant
+
+## Configuration
+
+All themes are loaded with `priority = 1000`, ensuring they load before other plugins that might depend on colors.
+
+```lua
+priority = 1000
+```
+
+The Rose Pine plugin includes the default colorscheme configuration because it's defined last.
+
+## Customizing Themes
+
+Many themes support additional configuration. For example, to customize OneDark:
+
+```lua
+{
+  "navarasu/onedark.nvim",
+  priority = 1000,
+  config = function()
+    require("onedark").setup({
+      style = "deep",              -- Choose style
+      transparent = false,         -- Disable transparency
+      term_colors = true,          -- Terminal colors
+      ending_tildes = false,       -- Hide tildes
+      code_style = {
+        comments = 'italic',
+        keywords = 'bold',
+        functions = 'none',
+        strings = 'none',
+        variables = 'none'
+      },
+    })
+    require("onedark").load()
+  end,
+}
+```
+
+<Tip>
+Refer to each theme's GitHub repository for detailed configuration options and customization guides.
+</Tip>
+
+## Theme Previews
+
+To quickly preview themes without restarting:
+
+1. Use `:colorscheme <theme-name>`
+2. If you don't like it, try another
+3. Once you find one you like, make it permanent
+
+<Note>
+Some theme changes may require a restart to fully apply, especially for UI elements like statusline and tabline.
+</Note>
+
+## Recommendations
+
+<AccordionGroup>
+  <Accordion title="For Dark Mode Lovers">
+    - **Catppuccin Mocha** - Soft, warm pastels
+    - **Tokyo Night Storm** - Cool blue tones
+    - **Bamboo** - Earthy, nature-inspired
+  </Accordion>
+  
+  <Accordion title="For Light Mode Users">
+    - **Catppuccin Latte** - Pastel light theme
+    - **Tokyo Night Day** - Clean, bright
+    - **Modus Operandi** - High contrast, accessible
+  </Accordion>
+  
+  <Accordion title="For Accessibility">
+    - **Modus Vivendi** (dark) or **Modus Operandi** (light)
+    - WCAG AAA compliant
+    - Excellent for long coding sessions
+  </Accordion>
+</AccordionGroup>
+
+## See Also
+
+- Check each theme's GitHub repository for screenshots and advanced configuration
+- Visit [vimcolorschemes.com](https://vimcolorschemes.com) to preview more themes
