@@ -1,0 +1,141 @@
+---
+title: Flash Motion
+description: Enhanced navigation with labeled jumps and Treesitter integration
+---
+
+Flash provides lightning-fast cursor movement with labeled jump points, making it easy to navigate to any visible location in your code.
+
+## Features
+
+- **Labeled Jumps**: Jump to any location with 1-2 keystrokes
+- **Treesitter Integration**: Jump to specific syntax nodes
+- **Search Enhancement**: Enhanced search with jump labels
+- **Visual Mode Support**: Works in normal, visual, and operator-pending modes
+
+## Keybindings
+
+| Mode | Key | Action | Description |
+|------|-----|--------|-------------|
+| `n`, `x`, `o` | `s` | Flash jump | Jump to any visible location |
+| `n`, `x`, `o` | `S` | Treesitter jump | Jump to Treesitter nodes (functions, classes, etc.) |
+| `o` | `r` | Remote flash | Remote operations with Flash |
+| `o`, `x` | `R` | Treesitter search | Search with Treesitter context |
+| `c` | `Ctrl+s` | Toggle flash search | Toggle Flash in command mode |
+| `n`, `x`, `o` | `Ctrl+Space` | Incremental selection | Expand/shrink Treesitter selection |
+
+## How Flash Works
+
+### Basic Jump (`s`)
+
+1. Press `s` in normal mode
+2. Type the character(s) you want to jump to
+3. Flash highlights all matches with labels
+4. Press the label key to jump
+
+```
+// Before pressing 's'
+function calculateTotal(items) {
+  return items.reduce((sum, item) => sum + item.price, 0);
+}
+
+// After pressing 's' then 'i'
+function calculateTotal(①tems) {
+  return ②tems.reduce((sum, ③tem) => sum + ④tem.pr⑤ce, 0);
+}
+// Press the label number to jump to that location
+```
+
+### Treesitter Jump (`S`)
+
+Jump directly to semantic code structures:
+
+```typescript
+class UserService {
+  // Press 'S' to see labels on:
+  constructor() {  // ① Constructor
+    // ...
+  }
+  
+  async getUser() {  // ② Method
+    // ...
+  }
+  
+  async updateUser() {  // ③ Method
+    // ...
+  }
+}
+```
+
+## Incremental Selection
+
+Press `Ctrl+Space` to incrementally expand selection based on Treesitter:
+
+```lua
+-- Cursor on 'name'
+local name = "value"
+
+-- Press Ctrl+Space once: selects 'name'
+local [name] = "value"
+
+-- Press Ctrl+Space again: selects 'name = "value"'
+local [name = "value"]
+
+-- Press Ctrl+Space again: selects entire statement
+[local name = "value"]
+```
+
+Press `Backspace` to shrink the selection.
+
+## Char Motion Enhancement
+
+Flash enhances the `f`, `t`, `F`, `T` motions:
+
+- Press `;` to jump to next match
+- Press `,` to jump to previous match
+
+## Configuration
+
+Flash is configured in `lua/leyland/plugins/flash.lua`:
+
+```lua
+opts = {
+  modes = {
+    char = {
+      char_actions = function(motion)
+        return {
+          [";"] = "next",
+          [","] = "prev",
+        }
+      end,
+    },
+  },
+}
+```
+
+## Use Cases
+
+<Accordion title="Quick Navigation in Long Files">
+Instead of using `j`/`k` repeatedly or counting lines, press `s` and type the first few characters of your destination, then press the label.
+</Accordion>
+
+<Accordion title="Precise Editing with Treesitter">
+Use `S` to jump to function definitions, class methods, or other semantic units without manually navigating.
+</Accordion>
+
+<Accordion title="Visual Selection Enhancement">
+In visual mode, use `s` or `S` to extend your selection to specific locations or syntax nodes.
+</Accordion>
+
+<Tip>
+Flash is lazy-loaded (loads on `VeryLazy` event), so it doesn't impact startup time.
+</Tip>
+
+## VSCode Compatibility
+
+Flash is configured to work in VSCode Neovim extension (`vscode = true`), providing the same navigation experience across editors.
+
+## Related Plugins
+
+- [Treesitter](/plugins/treesitter) - Powers semantic jumping
+- [Telescope](/plugins/telescope) - Complementary file/text finding
+- [Harpoon](/plugins/harpoon) - File-level navigation

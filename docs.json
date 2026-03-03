@@ -48,7 +48,11 @@
           "plugins/treesitter",
           "plugins/formatting",
           "plugins/git-integration",
-          "plugins/colorschemes"
+          "plugins/colorschemes",
+          "plugins/alpha",
+          "plugins/autopairs",
+          "plugins/flash",
+          "plugins/trouble"
         ]
       },
       {

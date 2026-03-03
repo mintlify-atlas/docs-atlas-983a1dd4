@@ -1,0 +1,117 @@
+---
+title: Auto Pairs
+description: Automatic bracket and quote pairing with Treesitter integration
+---
+
+Nvim-autopairs automatically inserts matching closing brackets, quotes, and other pairs as you type.
+
+## Features
+
+- **Automatic Pairing**: Inserts closing brackets, quotes, and parentheses
+- **Treesitter Integration**: Context-aware pairing based on syntax
+- **Completion Integration**: Works seamlessly with nvim-cmp
+- **Smart Deletion**: Removes pairs together when deleting opening character
+
+## How It Works
+
+When you type an opening character, autopairs automatically inserts the closing character:
+
+| You Type | Result | Cursor Position |
+|----------|--------|----------------|
+| `(` | `()` | Between the parentheses |
+| `[` | `[]` | Between the brackets |
+| `{` | `{}` | Between the braces |
+| `"` | `""` | Between the quotes |
+| `'` | `''` | Between the quotes |
+
+## Treesitter Integration
+
+Autopairs uses Treesitter to avoid adding pairs in certain contexts:
+
+```lua
+ts_config = {
+  lua = { "string" },              -- Don't add pairs inside Lua strings
+  javascript = { "template_string" }, -- Don't add pairs in template strings
+  java = false,                       -- Don't check treesitter on Java
+}
+```
+
+### Example Behavior
+
+```lua
+-- In Lua code
+local text = "hello|"  -- Typing ( here adds pairs
+
+-- Inside a Lua string
+local text = "hello(|"  -- Typing ( here does NOT add pairs
+```
+
+## Completion Integration
+
+Autopairs integrates with nvim-cmp to automatically close pairs after accepting a completion:
+
+```lua
+-- After accepting a function completion
+function_name|  -- Cursor here
+
+-- Autopairs adds the opening parenthesis when you type (
+function_name(|)
+```
+
+<Info>
+The integration with nvim-cmp ensures that completion and auto-pairing work together smoothly without conflicts.
+</Info>
+
+## Configuration
+
+Autopairs is configured in `lua/leyland/plugins/autopairs.lua`:
+
+```lua
+autopairs.setup({
+  check_ts = true, -- Enable treesitter
+  ts_config = {
+    lua = { "string" },
+    javascript = { "template_string" },
+    java = false,
+  },
+})
+
+-- Integrate with nvim-cmp
+local cmp_autopairs = require("nvim-autopairs.completion.cmp")
+local cmp = require("cmp")
+cmp.event:on("confirm_done", cmp_autopairs.on_confirm_done())
+```
+
+## Common Patterns
+
+### Function Calls
+```typescript
+function myFunc() {
+  console.log(|)  // Autopairs added the closing parenthesis
+}
+```
+
+### Object Literals
+```javascript
+const obj = {|}
+```
+
+### Array Definitions
+```python
+my_list = [|]
+```
+
+## Smart Features
+
+**Fast Wrap**: Press the closing character to jump over it instead of inserting a new one
+
+**Pair Deletion**: Deleting an opening character removes both the opening and closing characters
+
+<Tip>
+Autopairs triggers on `InsertEnter`, so it only loads when you enter insert mode, keeping startup fast.
+</Tip>
+
+## Related Plugins
+
+- [Completion](/plugins/completion) - nvim-cmp integration
+- [Treesitter](/plugins/treesitter) - Syntax-aware behavior

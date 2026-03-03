@@ -1,0 +1,143 @@
+---
+title: Trouble Diagnostics
+description: Pretty list for diagnostics, references, and quickfix items
+---
+
+Trouble provides a beautiful interface for viewing LSP diagnostics, references, and other lists in a dedicated window.
+
+## Features
+
+- **Unified Diagnostics View**: See all errors, warnings, and hints in one place
+- **File Grouping**: Diagnostics grouped by file for easy navigation
+- **LSP Integration**: Works with all LSP diagnostics
+- **Quick Navigation**: Jump directly to diagnostic locations
+
+## Keybindings
+
+| Key | Action | Description |
+|-----|--------|-------------|
+| `<leader>xx` | Toggle Trouble | Open/close the Trouble diagnostics window |
+
+<Info>
+The `<leader>` key in nvim-luffy is `Space`, so the keybinding is `Space xx`.
+</Info>
+
+## Usage
+
+### Opening Trouble
+
+Press `<leader>xx` to toggle the Trouble window:
+
+```
+┌─ Trouble ─────────────────────────────────────────┐
+│ lua/leyland/core/options.lua (2 warnings)         │
+│   ⚠ Line 42: Unused variable 'opt'                │
+│   ⚠ Line 55: Missing type annotation              │
+│                                                     │
+│ lua/leyland/plugins/lsp.lua (1 error)             │
+│   ✖ Line 15: Undefined variable 'vim.lsp'         │
+└───────────────────────────────────────────────────┘
+```
+
+### Navigating Diagnostics
+
+While in the Trouble window:
+
+- `j` / `k` - Move between diagnostics
+- `Enter` - Jump to diagnostic location
+- `q` - Close Trouble window
+- `<leader>xx` - Toggle Trouble
+
+## Diagnostic Severity Levels
+
+Trouble displays diagnostics with visual indicators:
+
+| Symbol | Severity | Description |
+|--------|----------|-------------|
+| ✖ | Error | Code errors that must be fixed |
+| ⚠ | Warning | Potential issues |
+| 󰠠 | Hint | Suggestions for improvement |
+| | Info | Informational messages |
+
+## Integration with LSP
+
+Trouble automatically collects diagnostics from all active LSP servers:
+
+```lua
+-- TypeScript diagnostics from ts_ls
+-- Python diagnostics from pyright
+-- Lua diagnostics from lua_ls
+-- And all other configured language servers
+```
+
+## Comparison with Other Diagnostic Views
+
+### Trouble vs Inline Diagnostics
+
+**Inline Diagnostics** (default Neovim):
+- Shows diagnostics directly in your code
+- Good for focusing on one file
+- Can be visually cluttered
+
+**Trouble**:
+- Centralized view of all diagnostics
+- Easy to see project-wide issues
+- Jump between files quickly
+- Better for fixing multiple issues
+
+### Trouble vs Telescope Diagnostics
+
+**Telescope** (`<leader>D`):
+- Fuzzy-searchable diagnostics
+- Good for finding specific issues
+
+**Trouble**:
+- Persistent window
+- File-grouped view
+- Better for systematic fixing
+
+<Tip>
+Use Trouble when you want to systematically fix all diagnostics in your project. Use Telescope diagnostics when searching for a specific issue.
+</Tip>
+
+## Configuration
+
+Trouble is configured in `lua/leyland/plugins/trouble.lua`:
+
+```lua
+return {
+  "folke/trouble.nvim",
+  dependencies = { "nvim-tree/nvim-web-devicons" },
+  opts = {},
+  keys = {
+    { "<leader>xx", "<cmd>Trouble diagnostics toggle<cr>", desc = "Toggle Trouble" },
+  },
+}
+```
+
+## Common Workflows
+
+<Accordion title="Fix All Errors in Project">
+1. Press `<leader>xx` to open Trouble
+2. Navigate to the first error with `j`/`k`
+3. Press `Enter` to jump to the error location
+4. Fix the error
+5. Press `<leader>xx` to return to Trouble
+6. Repeat for remaining errors
+</Accordion>
+
+<Accordion title="Review Warnings Before Commit">
+1. Open Trouble with `<leader>xx`
+2. Review all warnings in the project
+3. Decide which warnings to address
+4. Jump to each with `Enter` and fix
+</Accordion>
+
+<Accordion title="Check LSP Server Status">
+If Trouble shows no diagnostics, your LSP servers are reporting no issues. If you expect diagnostics but don't see them, check LSP status with `:LspInfo`.
+</Accordion>
+
+## Related Plugins
+
+- [LSP](/plugins/lsp) - Provides diagnostics to Trouble
+- [Telescope](/plugins/telescope) - Alternative diagnostic search

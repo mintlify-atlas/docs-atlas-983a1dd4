@@ -1,0 +1,74 @@
+---
+title: Alpha Dashboard
+description: Startup dashboard with One Piece ASCII art and quick actions
+---
+
+Alpha provides a beautiful startup dashboard that greets you when you launch Neovim without opening a file.
+
+## Features
+
+- **Custom ASCII Art**: Features a stunning One Piece-themed Luffy ASCII art
+- **Quick Actions**: Buttons for common tasks
+- **Inspirational Quote**: "Maybe the One Piece was the commits you made along the way."
+
+## Dashboard Actions
+
+The Alpha dashboard provides three quick action buttons:
+
+| Key | Action | Command |
+|-----|--------|--------|
+| `f` | Find file | `:Telescope find_files` |
+| `r` | Recent files | `:Telescope oldfiles` |
+| `q` | Quit | `:qa` |
+
+## Configuration
+
+The Alpha dashboard is configured in `lua/leyland/plugins/alpha.lua` with:
+
+```lua
+-- Custom One Piece ASCII art header
+dashboard.section.header.val = {
+  -- Luffy ASCII art (42 lines)
+}
+
+-- Action buttons
+dashboard.section.buttons.val = {
+  dashboard.button("f", "  Find file", ":Telescope find_files <CR>"),
+  dashboard.button("r", "  Recent files", ":Telescope oldfiles <CR>"),
+  dashboard.button("q", "  Quit", ":qa<CR>"),
+}
+
+-- Footer quote
+dashboard.section.footer.val = {
+  "",
+  '"Maybe the One Piece was the commits you made along the way."',
+  "",
+}
+```
+
+## When It Appears
+
+The Alpha dashboard appears automatically when you:
+- Launch Neovim without opening a file: `nvim`
+- Close all buffers while Neovim is running
+
+<Tip>
+The dashboard integrates with Telescope, so you can immediately start finding files or browsing recent files without any extra setup.
+</Tip>
+
+## Customization
+
+To customize the dashboard:
+
+1. Edit `lua/leyland/plugins/alpha.lua`
+2. Modify the `header.val` for different ASCII art
+3. Add or remove buttons in `buttons.val`
+4. Change the footer quote in `footer.val`
+
+<Note>
+Folding is disabled on the Alpha dashboard buffer to ensure the ASCII art displays correctly.
+</Note>
+
+## Related Plugins
+
+- [Telescope](/plugins/telescope) - File finding integration
