@@ -1,0 +1,80 @@
+{
+  "projectType": "general",
+  "projectName": "nvim-luffy",
+  "projectDescription": "A modern Neovim configuration with LSP, fuzzy finding, and a One Piece-inspired theme.",
+  "theme": "palm",
+  "primaryColor": "#2E7D9A",
+  "lightColor": "#4A9BBD",
+  "darkColor": "#1A5571",
+  "navigation": {
+    "groups": [
+      {
+        "group": "Getting Started",
+        "pages": [
+          "introduction",
+          "installation",
+          "quickstart"
+        ]
+      },
+      {
+        "group": "Configuration",
+        "pages": [
+          "configuration/options",
+          "configuration/keymaps",
+          "configuration/autocommands"
+        ]
+      },
+      {
+        "group": "Plugins",
+        "pages": [
+          "plugins/overview",
+          "plugins/lsp",
+          "plugins/telescope",
+          "plugins/harpoon",
+          "plugins/nvim-tree",
+          "plugins/completion",
+          "plugins/treesitter",
+          "plugins/formatting",
+          "plugins/git-integration",
+          "plugins/colorschemes"
+        ]
+      },
+      {
+        "group": "Guides",
+        "pages": [
+          "guides/customization",
+          "guides/adding-plugins",
+          "guides/lsp-configuration",
+          "guides/troubleshooting"
+        ]
+      },
+      {
+        "group": "Reference",
+        "pages": [
+          "reference/keymaps",
+          "reference/commands",
+          "reference/structure"
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "LSP support with Mason for multiple languages",
+    "Telescope fuzzy finder integration",
+    "Harpoon for quick file navigation",
+    "Auto-completion with nvim-cmp",
+    "Treesitter syntax highlighting",
+    "Auto-formatting with Conform",
+    "Git integration with Neogit and Diffview",
+    "Multiple colorscheme options",
+    "Custom keymaps and options"
+  ],
+  "publicApiSurface": [
+    "leyland.core.options",
+    "leyland.core.keymaps",
+    "leyland.core.autocommands",
+    "leyland.lazy",
+    "leyland.lsp",
+    "leyland.plugins.*"
+  ]
+}
